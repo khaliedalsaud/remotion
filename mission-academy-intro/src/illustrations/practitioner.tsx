@@ -21,24 +21,24 @@ const Sleeve: React.FC<{pts: Pt[]; s: number; hand?: boolean}> = ({pts, s, hand 
 };
 
 const X = 600;
-const Y = 1060;
+const Y = 1020;
 const S = 2.4;
 
 // Tablet: centre, size, tilt.
-const TAB = {cx: 772, cy: 978, w: 212, h: 276, rot: -8};
+const TAB = {cx: 772, cy: 938, w: 212, h: 276, rot: -8};
 
 export const focus = {
-	center: [0.5, 0.56],
+	center: [0.5, 0.53],
 	/** The head. */
-	face: [0.5, 0.445],
+	face: [0.5, 0.41],
 	/** The ID card on the lanyard. */
-	badge: [0.5, 0.726],
+	badge: [0.5, 0.693],
 	/** Hands holding the tablet. */
-	hands: [0.64, 0.82],
+	hands: [0.64, 0.787],
 } as const;
 
 const Practitioner: React.FC = () => {
-	const ids = useIds('dots', 'dotsDeep', 'dotsShelf');
+	const ids = useIds('dotsDeep', 'dotsShelf', 'disc');
 	const t = useAmbientFrame();
 	const a = personAnchors(X, Y, S);
 	// Very slow breathing: the whole figure rises and settles by ~2px.
@@ -58,13 +58,15 @@ const Practitioner: React.FC = () => {
 	return (
 		<Frame bg={PAL.mist}>
 			<defs>
-				<Halftone id={ids.dots} color={PAL.light} spacing={18} r={4} />
 				<Halftone id={ids.dotsDeep} color={PAL.primary} spacing={14} r={3} opacity={0.6} />
 				<Halftone id={ids.dotsShelf} color={PAL.light} spacing={12} r={2.6} angle={45} />
+				<clipPath id={ids.disc}>
+					<circle cx={600} cy={520} r={300} />
+				</clipPath>
 			</defs>
 
 			{/* soft arch behind the figure */}
-			<path d="M 250 1200 L 250 560 A 350 350 0 0 1 950 560 L 950 1200 Z" fill={PAL.pale} />
+			<path d="M 250 1200 L 250 520 A 350 350 0 0 1 950 520 L 950 1200 Z" fill={PAL.pale} />
 
 			{/* training-room shapes: shelving (left), wall board on a rail (right) */}
 			<g stroke={PAL.light} strokeWidth={4} strokeLinejoin="round">
@@ -95,11 +97,13 @@ const Practitioner: React.FC = () => {
 				<rect x={914} y={354} width={70} height={9} rx={4.5} fill={PAL.pale} />
 			</g>
 
-			{/* halftone disc framing the head, and a small accent disc */}
-			<circle cx={600} cy={560} r={300} fill={`url(#${ids.dots})`} />
-			<circle cx={862 + drift} cy={612} r={92} fill={`url(#${ids.dotsDeep})`} />
+			{/* disc framing the head, with a halftone crescent of brand dots */}
+			<circle cx={600} cy={520} r={300} fill={PAL.light} />
+			<circle cx={780 + drift} cy={660} r={300} fill={`url(#${ids.dotsDeep})`} clipPath={`url(#${ids.disc})`} />
 
 			<g transform={`translate(0 ${breathe})`}>
+				{/* thobe collar: fills the gaps the front-view ghutra leaves beside the neck */}
+				<rect x={X - 0.66 * a.r} y={a.head.y + 0.8 * a.r} width={1.32 * a.r} height={a.top - a.head.y - 0.8 * a.r + 12} fill={PAL.white} />
 				<Person x={X} y={Y} s={S} coat body={PAL.primary} wear="ghutra" armL="none" armR="none" />
 				{/* the coat continues past the bottom edge */}
 				<rect x={X - W / 2 + 3.6} y={Y - 5} width={W - 7.2} height={200} fill={PAL.white} />
@@ -109,8 +113,8 @@ const Practitioner: React.FC = () => {
 				<Badge x={X} neckY={a.top} s={2} />
 
 				{/* arms: the far one reaches across to steady the tablet */}
-				<Sleeve pts={[[a.shoulderR.x, a.shoulderR.y], [856, 900], handR]} s={S} hand={false} />
-				<Sleeve pts={[[a.shoulderL.x, a.shoulderL.y], [414, 920], handL]} s={S} hand={false} />
+				<Sleeve pts={[[a.shoulderR.x, a.shoulderR.y], [856, 860], handR]} s={S} hand={false} />
+				<Sleeve pts={[[a.shoulderL.x, a.shoulderL.y], [414, 880], handL]} s={S} hand={false} />
 
 				{/* tablet with a case file */}
 				<g transform={`translate(${TAB.cx} ${TAB.cy}) rotate(${TAB.rot})`}>

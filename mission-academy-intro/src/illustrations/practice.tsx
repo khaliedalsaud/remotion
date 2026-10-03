@@ -111,9 +111,10 @@ const Practice: React.FC = () => {
 
 			{/* skills bench with cabinet front */}
 			<rect x={150} y={980} width={900} height={240} fill={PAL.pale} stroke={PAL.ink} strokeWidth={3} />
+			<rect x={152} y={986} width={896} height={46} fill={`url(#${ids.dotsPad})`} />
 			<path d="M 450 990 L 450 1210 M 750 990 L 750 1210" stroke={PAL.ink} strokeWidth={3} />
 			{[300, 600, 900].map((x) => (
-				<rect key={x} x={x - 34} y={1012} width={68} height={10} rx={5} fill={PAL.light} stroke={PAL.ink} strokeWidth={2.5} />
+				<rect key={x} x={x - 34} y={1050} width={68} height={10} rx={5} fill={PAL.light} stroke={PAL.ink} strokeWidth={2.5} />
 			))}
 			<Table x={150} y={900} w={900} depth={70} />
 
@@ -172,9 +173,10 @@ const Practice: React.FC = () => {
 			<Limb pts={[[tr.shoulderL.x, tr.shoulderL.y], [322, 742], [398, 822]]} s={TR.s} color={PAL.primary} coat />
 			<Limb pts={[[tr.shoulderR.x, tr.shoulderR.y], [652, 702], probeHand]} s={TR.s} color={PAL.primary} coat hand={false} />
 			<g transform={`translate(${tip[0]} ${tip[1] - 4}) rotate(${probeAngle})`}>
-				<rect x={10} y={-7} width={104} height={14} rx={7} fill={PAL.deep} stroke={PAL.ink} strokeWidth={3} />
-				<rect x={34} y={-9} width={30} height={18} rx={5} fill={PAL.primary} stroke={PAL.ink} strokeWidth={3} />
-				<circle cx={6} cy={0} r={8} fill={PAL.white} stroke={PAL.ink} strokeWidth={3} />
+				<path d="M 12 -5 L 30 -9 L 30 9 L 12 5 Z" fill={PAL.light} stroke={PAL.ink} strokeWidth={3} strokeLinejoin="round" />
+				<rect x={28} y={-10} width={118} height={20} rx={10} fill={PAL.deep} stroke={PAL.ink} strokeWidth={3} />
+				<rect x={52} y={-12} width={34} height={24} rx={6} fill={PAL.primary} stroke={PAL.ink} strokeWidth={3} />
+				<circle cx={6} cy={0} r={10} fill={PAL.white} stroke={PAL.ink} strokeWidth={3.5} />
 			</g>
 			<circle cx={probeHand[0]} cy={probeHand[1]} r={17 * TR.s} fill={PAL.skin} />
 

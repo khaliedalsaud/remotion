@@ -139,7 +139,7 @@ const Research: React.FC = () => {
 			<Doc x={198} y={750} w={150} h={58} rotate={-2} lines={2} mark={0} heading={false} />
 
 			{/* colleague in the foreground, seen from behind */}
-			<Person x={1000} y={1212} s={1.42} back body={PAL.deep} wear="hijab" wearColor={PAL.mid} armL="none" armR="none" />
+			<Person x={985} y={1226} s={1.55} back body={PAL.deep} wear="hijab" wearColor={PAL.mid} armL="none" armR="none" />
 		</Frame>
 	);
 };
