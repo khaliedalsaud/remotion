@@ -15,15 +15,21 @@ import {LockupMark, LockupText, lockupLayout} from './scene7-lockup';
 
 const T = TEXT.s8;
 const BADGE_PAD = 34;
-const LIFT = -110;
-const CTA = {top: 600, size: 64, weight: WEIGHT.title};
-const WEB = {top: 708, size: 40, weight: WEIGHT.caption};
+const CTA = {size: 64, weight: WEIGHT.title};
+const WEB = {size: 40, weight: WEIGHT.caption};
+const CTA_GAP = 50;
 
 export const Scene8: React.FC = () => {
 	const frame = useCurrentFrame();
 	const th = THREAD.width;
 	const L = lockupLayout();
 	const {width: W, height: H} = CANVAS;
+	// Settled stack: badge, name, Latin name, CTA, website — centered on the card.
+	const ctaTop = L.bottom + CTA_GAP;
+	const webTop = ctaTop + CTA.size * 1.3 + 6;
+	const stackTop = L.markY - BADGE_PAD;
+	const stackBottom = webTop + WEB.size * 1.3;
+	const LIFT = CANVAS.cy - (stackTop + stackBottom) / 2;
 
 	// The thread widens across the frame, then thickens into the field.
 	const widen = prog(frame, 6, 18, EASE.inOut);
@@ -47,11 +53,9 @@ export const Scene8: React.FC = () => {
 	const badgeIn = prog(frame, 0, 14, EASE.out);
 	const badge = mixRect(mark, padded, badgeIn);
 
-	// Then the lockup lifts to make room for the call to action (shifted by half
-	// the badge padding so the badged lockup is centered), and the gap the
-	// thread left between the two names closes.
+	// Then the mark and name lift so the whole card is centered.
 	const settle = prog(frame, 22, 26, EASE.inOut);
-	const tx = mix(0, -BADGE_PAD / 2, settle);
+	const tx = 0;
 	const ty = mix(0, LIFT, settle);
 
 	// Two-tone wipe: light text where the field is behind it, dark elsewhere.
@@ -61,7 +65,6 @@ export const Scene8: React.FC = () => {
 	const outBand = `polygon(evenodd, -100px -2000px, ${W + 100}px -2000px, ${W + 100}px ${H + 2000}px, -100px ${H + 2000}px, -100px -2000px, -100px ${top}px, ${W + 100}px ${top}px, ${W + 100}px ${bottom}px, -100px ${bottom}px, -100px ${top}px)`;
 	const dark = thicken < 1;
 	const light = thicken > 0;
-	const enShift = mix(0, -14, settle);
 
 	return (
 		<AbsoluteFill>
@@ -101,7 +104,6 @@ export const Scene8: React.FC = () => {
 							enStart={-60}
 							nameColor={COLORS.ink}
 							enColor={COLORS.inkSoft}
-							enShift={enShift}
 						/>
 					</AbsoluteFill>
 				) : null}
@@ -113,7 +115,6 @@ export const Scene8: React.FC = () => {
 							enStart={-60}
 							nameColor={COLORS.white}
 							enColor={COLORS.light}
-							enShift={enShift}
 						/>
 					</AbsoluteFill>
 				) : null}
@@ -123,7 +124,7 @@ export const Scene8: React.FC = () => {
 					position: 'absolute',
 					left: 0,
 					right: 0,
-					top: CTA.top,
+					top: ctaTop + LIFT,
 					textAlign: 'center',
 					fontSize: CTA.size,
 					fontWeight: CTA.weight,
@@ -138,7 +139,7 @@ export const Scene8: React.FC = () => {
 					position: 'absolute',
 					left: 0,
 					right: 0,
-					top: WEB.top,
+					top: webTop + LIFT,
 					textAlign: 'center',
 					fontSize: WEB.size,
 					fontWeight: WEB.weight,

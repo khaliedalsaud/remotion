@@ -1,9 +1,9 @@
 // "المؤتمرات والفعاليات" — a conference stage. A clinician in coat and ghutra
-// speaks beside the lectern, gesturing to a large screen (bar chart + share
-// ring); a panelist waits in an armchair. Soft white light cones fall from
+// speaks beside the lectern, gesturing to a large screen (three connected
+// stages — the film's thread motif); a panelist waits in an armchair. Soft white light cones fall from
 // the truss, and the foreground row of the audience is seen from behind.
 // Composed for a wide crop (visible y ≈ 218–982) as well as the square.
-import {Badge, Board, Chart, Frame, Halftone, Person, PAL, personAnchors, useAmbientFrame, useIds} from './kit';
+import {Badge, Board, Frame, Halftone, Person, PAL, personAnchors, useAmbientFrame, useIds} from './kit';
 import type {Wear} from './kit';
 
 const FLOOR = 792; // where the backdrop meets the stage floor
@@ -120,42 +120,25 @@ const Conference: React.FC = () => {
 			<Board x={SCREEN.x} y={SCREEN.y} w={SCREEN.w} h={SCREEN.h}>
 				<rect x={SCREEN.x + 36} y={SCREEN.y + 34} width={170} height={16} rx={5} fill={PAL.deep} />
 				<rect x={SCREEN.x + 36} y={SCREEN.y + 62} width={110} height={8} rx={4} fill={PAL.light} />
-				<Chart x={SCREEN.x + 40} y={SCREEN.y + 112} w={260} h={180} values={[0.34, 0.5, 0.44, 0.7, 0.92]} accent={4} />
+				{/* the film's own motif: three stages joined by one thread */}
 				<path
-					d={`M ${SCREEN.x + 70} ${SCREEN.y + 236} L ${SCREEN.x + 122} ${SCREEN.y + 206} L ${SCREEN.x + 174} ${SCREEN.y + 214} L ${SCREEN.x + 226} ${SCREEN.y + 160} L ${SCREEN.x + 274} ${SCREEN.y + 122}`}
-					stroke={PAL.deep}
-					strokeWidth={5}
+					d={`M ${SCREEN.x + 90} ${SCREEN.y + 210} C ${SCREEN.x + 170} ${SCREEN.y + 210} ${SCREEN.x + 180} ${SCREEN.y + 140} ${SCREEN.x + 260} ${SCREEN.y + 140} C ${SCREEN.x + 340} ${SCREEN.y + 140} ${SCREEN.x + 350} ${SCREEN.y + 210} ${SCREEN.x + 430} ${SCREEN.y + 210}`}
+					stroke={PAL.primary}
+					strokeWidth={8}
 					fill="none"
 					strokeLinecap="round"
-					strokeLinejoin="round"
 				/>
 				{[
-					[70, 236],
-					[122, 206],
-					[174, 214],
-					[226, 160],
-					[274, 122],
+					[90, 210],
+					[260, 140],
+					[430, 210],
 				].map(([dx, dy], i) => (
-					<circle key={i} cx={SCREEN.x + dx} cy={SCREEN.y + dy} r={7} fill={PAL.white} stroke={PAL.deep} strokeWidth={4} />
+					<g key={i}>
+						<circle cx={SCREEN.x + dx} cy={SCREEN.y + dy} r={30} fill={i === 1 ? PAL.primary : PAL.white} stroke={PAL.primary} strokeWidth={7} />
+						<rect x={SCREEN.x + dx - 42} y={SCREEN.y + dy + 46} width={84} height={8} rx={4} fill={PAL.light} />
+						<rect x={SCREEN.x + dx - 28} y={SCREEN.y + dy + 62} width={56} height={8} rx={4} fill={PAL.light} />
+					</g>
 				))}
-				{/* share ring */}
-				<g transform={`rotate(-90 ${SCREEN.x + 410} ${SCREEN.y + 150})`}>
-					<circle cx={SCREEN.x + 410} cy={SCREEN.y + 150} r={70} fill="none" stroke={PAL.pale} strokeWidth={30} />
-					<circle cx={SCREEN.x + 410} cy={SCREEN.y + 150} r={70} fill="none" stroke={PAL.primary} strokeWidth={30} strokeDasharray={`${2 * Math.PI * 70 * 0.62} 999`} />
-					<circle
-						cx={SCREEN.x + 410}
-						cy={SCREEN.y + 150}
-						r={70}
-						fill="none"
-						stroke={PAL.light}
-						strokeWidth={30}
-						strokeDasharray={`0 ${2 * Math.PI * 70 * 0.64} ${2 * Math.PI * 70 * 0.2} 999`}
-					/>
-				</g>
-				<rect x={SCREEN.x + 352} y={SCREEN.y + 250} width={14} height={14} rx={3} fill={PAL.primary} />
-				<rect x={SCREEN.x + 376} y={SCREEN.y + 253} width={100} height={8} rx={4} fill={PAL.light} />
-				<rect x={SCREEN.x + 352} y={SCREEN.y + 278} width={14} height={14} rx={3} fill={PAL.light} />
-				<rect x={SCREEN.x + 376} y={SCREEN.y + 281} width={70} height={8} rx={4} fill={PAL.light} />
 			</Board>
 
 			{/* light cones from the truss */}

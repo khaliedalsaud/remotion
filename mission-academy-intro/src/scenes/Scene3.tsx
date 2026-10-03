@@ -77,7 +77,7 @@ const SKILL: Sat = {
 const APPLY: Sat = {
 	slot: 'apply',
 	note: T.notes.apply,
-	at: 284,
+	at: 258,
 	rect: {x: 280, y: 612, w: 368, h: 248},
 	tilt: 1.2,
 	fromY: 700,
@@ -128,7 +128,7 @@ const detailOf = (s: Sat): {zoom: Point; world: Point} => {
 // Timeline (local frames).
 const DROP = 34;
 const UNFOLD = 52;
-const ZOOM = 296;
+const ZOOM = 310;
 const OUT = 328;
 const LAST = 359;
 

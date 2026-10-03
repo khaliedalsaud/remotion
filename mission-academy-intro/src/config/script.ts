@@ -50,10 +50,10 @@ export const VOICEOVER: VoLine[] = [
 		scene: 's3',
 		text: 'جهة تدريبية سعودية متخصصة في القطاع الصحي والتطوير المهني، تعمل على تأهيل الممارسين، وتطوير معارفهم ومهاراتهم.',
 		chunks: [
-			{text: 'جهة تدريبية سعودية', from: 378, to: 424},
-			{text: 'متخصصة في القطاع الصحي والتطوير المهني،', from: 424, to: 514},
-			{text: 'تعمل على تأهيل الممارسين،', from: 518, to: 572},
-			{text: 'وتطوير معارفهم ومهاراتهم.', from: 576, to: 642},
+			{text: 'جهة تدريبية سعودية', from: 368, to: 410},
+			{text: 'متخصصة في القطاع الصحي والتطوير المهني،', from: 410, to: 498},
+			{text: 'تعمل على تأهيل الممارسين،', from: 502, to: 552},
+			{text: 'وتطوير معارفهم ومهاراتهم.', from: 556, to: 620},
 		],
 	},
 	{
@@ -99,7 +99,7 @@ export const VOICEOVER: VoLine[] = [
 export const CUES = {
 	s1: {knowledge: 76, practice: 102},
 	s2: {learn: 176, apply: 214, grow: 256, mission: 330},
-	s3: {health: 470, professional: 500, practitioners: 556, knowledge: 604, skills: 626},
+	s3: {health: 460, professional: 490, practitioners: 540, knowledge: 584, skills: 606},
 	s4: {education: 748, research: 798, events: 846, integrate: 906},
 	s5: {partners: 1062, exchange: 1150, learning: 1180, partnerships: 1216},
 	s6: {journey: 1350, knowledge: 1386, practice: 1466},

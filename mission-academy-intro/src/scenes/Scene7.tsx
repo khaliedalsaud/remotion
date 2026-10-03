@@ -1,8 +1,9 @@
 // Scene 7 (51–56s) — «أكاديمية ميشن»
 // Match cut from Scene 6's open window: it shrinks into the corner of a tidy
 // board while the film's other clippings gather around the name. They withdraw
-// calmly; the training clipping folds back into the thread, which travels home
-// and comes to rest under the name, beside the original mark.
+// calmly, the original mark grows into the space they leave (the name settles
+// beneath it), and the training clipping folds back into the thread, which
+// travels home and comes to rest beside the mark.
 import {AbsoluteFill, useCurrentFrame} from 'remotion';
 import {Clip} from '../components/Clip';
 import {Sfx} from '../components/Sfx';
@@ -39,6 +40,8 @@ const HOME = cell(3, 0);
 
 const GATHER = 12;
 const LEAVE = 58;
+/** While the board is up the name sits in its middle band; it then settles under the mark. */
+const BOARD_NAME_TOP = 432;
 
 export const Scene7: React.FC = () => {
 	const frame = useCurrentFrame();
@@ -61,6 +64,9 @@ export const Scene7: React.FC = () => {
 	const lead = prog(frame, pCue - 18, 18, EASE.inOut);
 	const tail = prog(frame, pCue - 14, 18, EASE.inOut);
 	const travelling = fold >= 1;
+
+	const settle = prog(frame, LEAVE + 2, 30, EASE.inOut);
+	const nameDy = mix(BOARD_NAME_TOP - L.nameTop, 0, settle);
 
 	// Scene 6's thread retracts into the window's edge as the tagline leaves.
 	const retract = prog(frame, 0, 14, EASE.in);
@@ -113,19 +119,21 @@ export const Scene7: React.FC = () => {
 					y={mix(line.y + th / 2, L.rule.y, dropY)}
 				/>
 			)}
-			<LockupMark L={L} reveal={prog(frame, nCue - 10, 22, EASE.inOut)} />
+			<LockupMark L={L} reveal={prog(frame, LEAVE + 8, 26, EASE.inOut)} />
 			<LockupText
 				L={L}
 				nameStart={nCue - 4}
 				enStart={nCue + 6}
 				nameColor={LOCKUP_COLORS.name}
 				enColor={LOCKUP_COLORS.en}
+				dy={nameDy}
 			/>
 			<Tagline start={-60} exitAt={0} exitDuration={10} practiceColor={COLORS.primary} />
 			<Sfx at={0} name="swipe" volume={0.3} />
 			<Sfx at={6} name="whoosh" volume={0.45} />
 			<Sfx at={GATHER + 4} name="paper" volume={0.4} />
-			<Sfx at={nCue - 10} name="swell" volume={0.5} />
+			<Sfx at={nCue - 4} name="tick" volume={0.35} />
+			<Sfx at={LEAVE + 8} name="swell" volume={0.5} />
 			<Sfx at={LEAVE} name="swipe" volume={0.3} />
 			<Sfx at={LEAVE + 12} name="paper" volume={0.45} />
 			<Sfx at={pCue - 18} name="swipe" volume={0.4} />

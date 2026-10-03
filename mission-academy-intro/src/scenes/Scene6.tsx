@@ -17,17 +17,20 @@ const WIN = HANDOFF.s1s2Window;
 
 export const Scene6: React.FC = () => {
 	const frame = useCurrentFrame();
-	const jCue = cue('s6', 'journey');
 	const kCue = cue('s6', 'knowledge');
 	const pCue = cue('s6', 'practice');
 	const th = THREAD.width;
 	const {knowledge: K, practice: P} = taglineSpans();
 
-	// 1. On «رحلة» the dot sets off to the start of the underline.
-	const glide = prog(frame, jCue - 6, 18, EASE.inOut);
+	// 0. The network's dot stretches into a short dash at once — a round dot
+	// waiting under the word would read as a stray letter dot.
+	const stretch = prog(frame, 2, 12, EASE.out);
+	const half = mix(DOT.r, 32, stretch);
+	// 1. As the words land, the dash moves to the start of «المعرفة…» and waits
+	// there as the first stroke of its underline.
+	const glide = prog(frame, 10, 24, EASE.inOut);
 	// 2. It draws beneath «المعرفة…» (right → left) as the word is spoken.
 	const draw = prog(frame, kCue - 18, 20, EASE.out);
-	const thin = prog(frame, kCue - 18, 8, EASE.out);
 	// 3. The leading edge runs on to the opening's window and unfolds it.
 	const run = prog(frame, kCue + 4, 18, EASE.inOut);
 	const unfold = prog(frame, kCue + 20, 22, EASE.inOut);
@@ -38,11 +41,11 @@ export const Scene6: React.FC = () => {
 	// 5. …and the window opens out into a full-height picture of practice.
 	const open = prog(frame, pCue + 2, 32, EASE.inOut);
 
-	const dotX = mix(DOT.x, K.right - DOT.r, glide);
-	const h = mix(DOT.r * 2, th, thin);
-	let left = mix(dotX - DOT.r, K.left, draw);
+	const dotX = mix(DOT.x, K.right - 32, glide);
+	const h = mix(DOT.r * 2, th, stretch);
+	let left = mix(dotX - half, K.left, draw);
 	left = mix(left, WIN.x, run);
-	const right = mix(dotX + DOT.r, P.right, reach);
+	const right = mix(dotX + half, P.right, reach);
 	const y = mix(TAG.underA, TAG.underB, drop);
 
 	const seg: Rect = {x: WIN.x, y: TAG.underA - th / 2, w: WIN.w, h: th};
@@ -83,7 +86,7 @@ export const Scene6: React.FC = () => {
 				/>
 			) : null}
 			<Tagline start={4} practiceColor={practiceColor} />
-			<Sfx at={jCue - 6} name="swipe" volume={0.3} />
+			<Sfx at={10} name="swipe" volume={0.3} />
 			<Sfx at={kCue - 18} name="tick" volume={0.45} />
 			<Sfx at={kCue + 4} name="swipe" volume={0.4} />
 			<Sfx at={kCue + 22} name="paper" volume={0.55} />

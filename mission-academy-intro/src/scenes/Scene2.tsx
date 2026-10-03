@@ -19,7 +19,7 @@ const SLOT_H = 470;
 const SLOT_Y = 150;
 const WORD_TOP = 650;
 const WORD_SIZE = 104;
-const LINE_Y = WORD_TOP + WORD_SIZE * 1.2;
+const LINE_Y = WORD_TOP + WORD_SIZE * 1.48;
 
 // Right → left in reading order.
 const STEPS: Array<{slot: Slot; word: string; x: number; bar: number}> = [
@@ -61,6 +61,8 @@ export const Scene2: React.FC = () => {
 	lineY = mix(lineY, HANDOFF.s2s3Line.y, glide);
 
 	const exitFade = 1 - prog(frame, EXIT, 14, EASE.in);
+	// The words leave first so the rising thread never strikes through them.
+	const wordFade = 1 - prog(frame, EXIT - 12, 12, EASE.soft);
 	const logoIn = prog(frame, MORPH + 36, 10, EASE.soft);
 	const pillsOut = prog(frame, MORPH + 42, 8, EASE.soft);
 
@@ -115,7 +117,7 @@ export const Scene2: React.FC = () => {
 							fontWeight: WEIGHT.display,
 							lineHeight: 1.25,
 							color,
-							opacity: exitFade,
+							opacity: wordFade,
 						}}
 					>
 						<Words text={step.word} start={stepStart[i]} duration={20} />
