@@ -1,0 +1,26 @@
+{
+  "name": "mission-academy-intro",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mission Academy — 60s Arabic editorial explainer intro (Remotion)",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render MissionAcademyIntro out/mission-academy-intro.mp4",
+    "cover": "remotion still MissionAcademyIntro out/cover.png --frame=330",
+    "captions": "tsx scripts/export-voiceover.ts",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.532",
+    "@remotion/layout-utils": "4.0.532",
+    "@remotion/paths": "4.0.532",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "remotion": "4.0.532"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.0",
+    "tsx": "4.19.2",
+    "typescript": "5.8.3"
+  }
+}
