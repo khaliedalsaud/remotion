@@ -312,9 +312,17 @@ const Workshop: React.FC = () => {
 			))}
 
 			{/* clinician in profile, pointing to a card */}
-			<g transform={`rotate(${point} ${P2.x} ${P2.y})`}>
-				<Side x={P2.x} y={P2.y} s={P2.s} dir={1} body={PAL.deep} coat wear="ghutra" arm="reach" standing />
-			</g>
+			<Side
+				x={P2.x}
+				y={P2.y}
+				s={P2.s}
+				dir={1}
+				body={PAL.deep}
+				coat
+				wear="ghutra"
+				standing
+				pts={[[P2.x - 6 * P2.s, P2.y - 142 * P2.s], [300, 676 + point], [392, 566 + point * 2]]}
+			/>
 
 			{/* participant from behind, pressing the new card into the slot */}
 			<g transform={`translate(${press * 0.4} ${press})`}>

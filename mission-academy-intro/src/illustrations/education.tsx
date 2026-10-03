@@ -3,7 +3,7 @@
 // where a presenter stands small beside the slide. Learners are seen from
 // behind, two in profile (one writing at the aisle end, one turned to a
 // neighbour). Window light from the side wall falls across the rows.
-import {Board, Frame, Halftone, Person, PAL, useAmbientFrame, useIds} from './kit';
+import {Board, Frame, Halftone, Person, PAL, personAnchors, useAmbientFrame, useIds} from './kit';
 import type {Wear} from './kit';
 
 type Pt = readonly [number, number];
@@ -434,6 +434,7 @@ const Education: React.FC = () => {
 							<g key={i}>
 								<g transform={l.lean ? `rotate(${l.lean} ${col(l.u, row.y)} ${row.y})` : undefined}>
 								<Person x={col(l.u, row.y)} y={row.y} s={row.s} back body={l.body} wear={l.wear} wearColor={l.wearColor} armL="none" armR="none" />
+									{l.wear === 'none' ? <BackHair x={col(l.u, row.y)} y={row.y} s={row.s} /> : null}
 								</g>
 								<ChairBack x={col(l.u, row.y)} y={row.y + 8 * row.s} s={row.s} />
 							</g>
