@@ -15,14 +15,14 @@ export const EASE = {
 	soft: Easing.bezier(0.45, 0, 0.55, 1),
 } as const;
 
-/** 0→1 over [start, start + duration], clamped. */
+/** 0→1 over [start, start + duration], clamped. Works on frames or on 0–1 progress. */
 export const prog = (
 	frame: number,
 	start: number,
 	duration: number,
 	easing: (t: number) => number = EASE.out,
 ) =>
-	interpolate(frame, [start, start + Math.max(1, duration)], [0, 1], {
+	interpolate(frame, [start, start + Math.max(1e-6, duration)], [0, 1], {
 		extrapolateLeft: 'clamp',
 		extrapolateRight: 'clamp',
 		easing,

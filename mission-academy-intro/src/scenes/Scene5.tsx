@@ -313,10 +313,10 @@ export const Scene5: React.FC = () => {
 	// Satellite clippings: thread out from under the conference, lift, then
 	// (gathering) fold back into a dot that rides the thread home.
 	const sats = SATS.map((s, i) => {
-		const visible = s.hidden / SAT_LEN[i];
+		const under = s.hidden / SAT_LEN[i];
 		const out = prog(frame, s.draw, DRAW_DUR, EASE.inOut);
 		const back = prog(frame, SAT_RETRACT + i * 2, 14, EASE.inOut);
-		const to = frame < SAT_RETRACT ? (out > 0 ? mix(visible, 1, out) : 0) : 1 - back;
+		const to = frame < SAT_RETRACT ? (out > 0 ? mix(under, 1, out) : 0) : 1 - back;
 		const liftAt = s.draw + LIFT_AFTER;
 		const lift = prog(frame, liftAt, 22, EASE.inOut);
 		const reveal = prog(frame, liftAt + 7, 12, EASE.out);
@@ -327,7 +327,7 @@ export const Scene5: React.FC = () => {
 		const tipScreen = ws(tip ?? HC);
 		let rect = rectToScreen(world, cam);
 		rect = mixRect(rect, dotRect(tipScreen, 9), morph);
-		return {s, i, to, lift, reveal, morph, back, rect, world};
+		return {s, to, lift, reveal, morph, back, rect, world};
 	});
 
 	const anchorPos = (k: number): Point => (k === 0 ? hubC : center(sats[k - 1].rect));
