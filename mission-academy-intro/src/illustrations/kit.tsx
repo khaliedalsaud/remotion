@@ -182,6 +182,9 @@ export const Person: React.FC<{
 					fill={wc}
 				/>
 			) : null}
+			{wear === 'ghutra' && !back ? (
+				<rect x={head.x - r * 0.66} y={head.y + r * 0.7} width={r * 1.32} height={top - head.y - r * 0.7 + 12 * s} fill={wc} />
+			) : null}
 			<rect x={x - 13 * s} y={head.y + r - 8 * s} width={26 * s} height={top - head.y - r + 14 * s} fill={PAL.skin} />
 			<path d={torso} fill={coat ? PAL.white : body} stroke={coat ? PAL.light : 'none'} strokeWidth={3 * s} />
 			{coat && !back ? (

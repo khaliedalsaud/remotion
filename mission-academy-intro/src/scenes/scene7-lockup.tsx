@@ -54,7 +54,9 @@ export const LockupText: React.FC<{
 	enStart: number;
 	nameColor: string;
 	enColor: string;
-}> = ({L, nameStart, enStart, nameColor, enColor}) => (
+	/** Vertical nudge of the Latin name (px). */
+	enShift?: number;
+}> = ({L, nameStart, enStart, nameColor, enColor, enShift = 0}) => (
 	<>
 		<div
 			style={{
@@ -74,7 +76,7 @@ export const LockupText: React.FC<{
 			style={{
 				position: 'absolute',
 				right: CANVAS.width - L.textRight,
-				top: L.enTop,
+				top: L.enTop + enShift,
 				fontSize: EN.size,
 				fontWeight: EN.weight,
 				lineHeight: 1.25,

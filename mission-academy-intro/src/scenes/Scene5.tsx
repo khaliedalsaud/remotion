@@ -96,15 +96,15 @@ const CAM_NET: Point = {
 	y: COLLAGE_C.y - (NET_FOCUS.y - CANVAS.cy) / S_NET,
 };
 const S_END = 0.5;
-const PULL = 150;
-const PULL_END = 204;
+const PULL = 146;
+const PULL_END = 196;
 const GATHER = 222;
 const END = 266;
 const CAM: CamKey[] = [
 	{f: 0, x: CANVAS.cx, y: CANVAS.cy, s: 1},
 	{f: PULL, x: CANVAS.cx, y: CANVAS.cy, s: 1},
 	{f: PULL_END, ...CAM_NET, s: S_NET},
-	{f: GATHER, ...CAM_NET, s: S_NET},
+	{f: GATHER, x: CAM_NET.x - 6, y: CAM_NET.y + 4, s: S_NET * 1.02},
 	// The conference's center lands exactly on the hand-off dot.
 	{f: END, x: HC.x - (DOT.x - CANVAS.cx) / S_END, y: HC.y - (DOT.y - CANVAS.cy) / S_END, s: S_END},
 ];
@@ -173,7 +173,7 @@ const HUBS: HubSpec[] = [
 ];
 const CLIP_SIZE = {w: 108, h: 74};
 const HUB_GROW = 166;
-const CLIP_GROW = 184;
+const CLIP_GROW = 180;
 
 const ANCHOR_RECTS: Rect[] = [CONF, ...SATS.map((s) => s.rect)];
 const ANCHOR_NET = ANCHOR_RECTS.map((r) => {
@@ -188,8 +188,10 @@ const rectDist = (q: Point, r: Rect) => {
 
 const NODES: NetNode[] = (() => {
 	const nodes: NetNode[] = [];
-	let dotRank = 0;
-	let clipRank = 0;
+	// Grow outward: nearest hubs first (partnership clippings last).
+	const reach = (h: HubSpec) => Math.hypot(h.x - NET_FOCUS.x, h.y - NET_FOCUS.y);
+	const rank = (h: HubSpec) =>
+		HUBS.filter((o) => (o.kind === 'clip') === (h.kind === 'clip') && reach(o) < reach(h)).length;
 	HUBS.forEach((h, i) => {
 		const q = {x: h.x, y: h.y};
 		const anchor = ANCHOR_NET.map((r, k) => ({k, d: rectDist(q, r)})).sort((a, b) => a.d - b.d)[0];
@@ -199,7 +201,7 @@ const NODES: NetNode[] = (() => {
 			p: netWorld(q),
 			parent: -(anchor.k + 1),
 			depth: 1,
-			grow: isClip ? CLIP_GROW + 4 * clipRank++ : HUB_GROW + 3 * dotRank++,
+			grow: isClip ? CLIP_GROW + 4 * rank(h) : HUB_GROW + 3 * rank(h),
 			kind: h.kind,
 			primary: true,
 			slot: h.slot ?? null,
@@ -220,7 +222,7 @@ const NODES: NetNode[] = (() => {
 				p: netWorld(q),
 				parent: i,
 				depth: 2,
-				grow: hub.grow + (h.kind === 'clip' ? 9 : 5) + k * 3,
+				grow: hub.grow + (h.kind === 'clip' ? 8 : 4) + k * 2,
 				kind: 'dot',
 				primary: random(`s5-p-${i}-${k}`) < 0.25,
 				slot: null,
@@ -359,7 +361,7 @@ export const Scene5: React.FC = () => {
 			{/* Network links (screen px, ink-thin). */}
 			<svg width={CANVAS.width} height={CANVAS.height} style={{position: 'absolute', left: 0, top: 0}}>
 				{CROSS.map(([a, b]) => {
-					const g = prog(frame, Math.max(NODES[a].grow, NODES[b].grow) + 2, 12, EASE.inOut);
+					const g = prog(frame, Math.min(Math.max(NODES[a].grow, NODES[b].grow) + 2, 200), 12, EASE.inOut);
 					if (g <= 0 || crossOut <= 0) return null;
 					const pa = pos[a];
 					const pb = mixPoint(pos[a], pos[b], g);
@@ -417,7 +419,7 @@ export const Scene5: React.FC = () => {
 				const c = pos[i];
 				const full: Rect = {x: c.x - w / 2, y: c.y - h / 2, w, h};
 				const line: Rect = {x: c.x - w / 2, y: c.y - (th * cam.s) / 2, w, h: th * cam.s};
-				const reveal = prog(frame, n.grow + 4, 10, EASE.out);
+				const reveal = prog(frame, n.grow, 8, EASE.out);
 				const morph = prog(frame, collapseAt(n.depth) - 10, 10, EASE.inOut);
 				const rect = mixRect(mixRect(line, full, unfold), dotRect(c, 8), morph);
 				return (
@@ -464,7 +466,7 @@ export const Scene5: React.FC = () => {
 				shadow={mix(1, 0.5, prog(frame, PULL, 50)) * (1 - span(hubM, 0, 0.6))}
 				radius={mix(3 * cam.s, hubRect.w / 2, hubM)}
 				fill={interpolateColors(hubM, [0, 0.5], [COLORS.mist, COLORS.primary])}
-				contentOpacity={1 - span(hubM, 0.1, 0.5)}
+				contentOpacity={1 - span(hubM, 0, 0.4)}
 				zoom={{scale: zoom, x: 0.5, y: 0.5}}
 			/>
 
@@ -551,6 +553,7 @@ export const Scene5: React.FC = () => {
 			<Sfx at={cExchange - 2} name="tick" volume={0.5} />
 			<Sfx at={PULL} name="whoosh" volume={0.45} />
 			<Sfx at={HUB_GROW} name="pop" volume={0.2} />
+			<Sfx at={CLIP_GROW} name="paper" volume={0.3} />
 			<Sfx at={cPartnerships} name="pop" volume={0.35} />
 			<Sfx at={GATHER} name="swipe" volume={0.4} />
 			<Sfx at={END - 4} name="pop" volume={0.45} />

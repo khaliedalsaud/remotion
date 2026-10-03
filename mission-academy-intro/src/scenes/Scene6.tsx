@@ -34,9 +34,9 @@ export const Scene6: React.FC = () => {
 	const reveal = prog(frame, kCue + 26, 12, EASE.out);
 	// 4. On «الممارسة» the thread drops to the new word, still tied to the window…
 	const reach = prog(frame, pCue - 14, 18, EASE.inOut);
-	const drop = prog(frame, pCue - 12, 20, EASE.inOut);
+	const drop = prog(frame, pCue - 10, 16, EASE.inOut);
 	// 5. …and the window opens out into a full-height picture of practice.
-	const open = prog(frame, pCue + 4, 32, EASE.inOut);
+	const open = prog(frame, pCue + 2, 32, EASE.inOut);
 
 	const dotX = mix(DOT.x, K.right - DOT.r, glide);
 	const h = mix(DOT.r * 2, th, thin);
@@ -87,8 +87,8 @@ export const Scene6: React.FC = () => {
 			<Sfx at={kCue - 18} name="tick" volume={0.45} />
 			<Sfx at={kCue + 4} name="swipe" volume={0.4} />
 			<Sfx at={kCue + 22} name="paper" volume={0.55} />
-			<Sfx at={pCue - 12} name="swipe" volume={0.35} />
-			<Sfx at={pCue + 4} name="whoosh" volume={0.45} />
+			<Sfx at={pCue - 14} name="swipe" volume={0.35} />
+			<Sfx at={pCue + 2} name="whoosh" volume={0.45} />
 		</AbsoluteFill>
 	);
 };

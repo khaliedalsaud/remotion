@@ -12,24 +12,46 @@ type Pt = readonly [number, number];
 const edgeOf = (c: string) => (c === PAL.primary ? PAL.deep : c === PAL.deep ? PAL.ink : c === PAL.mid ? PAL.primary : PAL.light);
 
 /** Arm in the kit's style through custom joints (shoulder → elbow → hand). */
-const Limb: React.FC<{pts: Pt[]; s: number; color: string; edge: string}> = ({pts, s, color, edge}) => {
+const Limb: React.FC<{pts: Pt[]; s: number; color: string; edge: string; hand?: boolean}> = ({pts, s, color, edge, hand = true}) => {
 	const d = pts.map(([x, y], i) => `${i ? 'L' : 'M'} ${x} ${y}`).join(' ');
 	const [hx, hy] = pts[pts.length - 1];
 	return (
 		<g>
 			<path d={d} stroke={edge} strokeWidth={39 * s} fill="none" strokeLinecap="round" strokeLinejoin="round" />
 			<path d={d} stroke={color} strokeWidth={34 * s} fill="none" strokeLinecap="round" strokeLinejoin="round" />
-			<circle cx={hx} cy={hy} r={17 * s} fill={PAL.skin} />
+			{hand ? <circle cx={hx} cy={hy} r={17 * s} fill={PAL.skin} /> : null}
 		</g>
 	);
 };
 
-type SideArm = 'desk' | 'gesture' | 'hold' | 'down';
+type SideArm = 'desk' | 'gesture' | 'hold' | 'down' | 'reach' | 'none';
+
+/** Joints (shoulder, elbow, hand) of a profile figure's near arm. */
+const sideArm = (x: number, y: number, s: number, f: 1 | -1, pose: SideArm): Pt[] => {
+	const top = y - 176 * s;
+	const J = (dx: number, dy: number): Pt => [x + f * dx * s, top + dy * s];
+	const sh = J(-6, 34);
+	switch (pose) {
+		case 'desk':
+			return [sh, J(16, 116), J(102, 104)];
+		case 'gesture':
+			return [sh, J(30, 112), J(92, 50)];
+		case 'hold':
+			return [sh, J(18, 116), J(82, 84)];
+		case 'down':
+			return [sh, J(4, 100), J(8, 166)];
+		case 'reach':
+			return [sh, J(70, -20), J(120, -96)];
+		case 'none':
+			return [];
+	}
+};
 
 /**
  * A figure in profile, drawn in the kit's geometry (same head size, torso
- * height and limb weight as <Person>). dir = -1 faces left. (x, y) is the
- * centre of the waist line.
+ * height and limb weight as <Person>). dir = -1 faces left; (x, y) is the
+ * centre of the waist line. `part` splits a seated figure so a table can
+ * pass between its legs ('legs') and its upper body ('upper').
  */
 const Side: React.FC<{
 	x: number;
@@ -42,9 +64,12 @@ const Side: React.FC<{
 	wearColor?: string;
 	arm?: SideArm;
 	rot?: number;
-	/** Seated on a chair (legs forward, chair behind). */
 	seated?: boolean;
-}> = ({x, y, s = 1, dir = -1, body = PAL.primary, coat = false, wear = 'none', wearColor, arm = 'desk', rot = 0, seated = false}) => {
+	standing?: boolean;
+	part?: 'all' | 'legs' | 'upper';
+	/** Custom joints for the near arm (overrides `arm`). */
+	pts?: Pt[];
+}> = ({x, y, s = 1, dir = -1, body = PAL.primary, coat = false, wear = 'none', wearColor, arm = 'desk', rot = 0, seated = false, standing = false, part = 'all', pts: custom}) => {
 	const f = dir;
 	const top = y - 176 * s;
 	const r = 36 * s;
@@ -56,23 +81,18 @@ const Side: React.FC<{
 	const P = (deg: number, k = 1): Pt => [hx + f * r * k * Math.cos((deg * Math.PI) / 180), hy - r * k * Math.sin((deg * Math.PI) / 180)];
 	const sweep = f === 1 ? 0 : 1;
 	const torso = `M ${bx} ${y} L ${bx} ${top + 62 * s} C ${bx} ${top + 16 * s} ${x - f * 26 * s} ${top} ${x} ${top} L ${x + f * 12 * s} ${top} C ${fx - f * 4 * s} ${top} ${fx} ${top + 22 * s} ${fx} ${top + 52 * s} L ${fx} ${y} Z`;
-	const sh: Pt = [x - f * 6 * s, top + 34 * s];
-	const J = (dx: number, dy: number): Pt => [x + f * dx * s, top + dy * s];
-	const armPts: Record<SideArm, Pt[]> = {
-		desk: [sh, J(16, 116), J(102, 104)],
-		gesture: [sh, J(30, 112), J(92, 50)],
-		hold: [sh, J(18, 116), J(82, 84)],
-		down: [sh, J(4, 100), J(8, 166)],
-	};
 	const sleeve = coat ? PAL.white : body;
 	const wc = wearColor ?? (wear === 'ghutra' ? PAL.white : PAL.deep);
-	const [p60x, p60y] = P(62, 1.04);
-	const [p215x, p215y] = P(218, 1.04);
-	const [fpx, fpy] = P(8, 1.06);
-	const [bpx, bpy] = P(190, 1.14);
+	const [hairAx, hairAy] = P(62, 1.04);
+	const [hairBx, hairBy] = P(218, 1.04);
+	const [gFx, gFy] = P(30, 1.08);
+	const [gBx, gBy] = P(190, 1.14);
+	const pts = custom ?? sideArm(x, y, s, f, arm);
+	const legs = part !== 'upper';
+	const upper = part !== 'legs';
 	return (
 		<g>
-			{seated ? (
+			{legs && seated ? (
 				<g>
 					<g stroke={PAL.ink} strokeWidth={6 * s} strokeLinecap="round">
 						<line x1={x - f * 40 * s} y1={y + 10 * s} x2={x - f * 44 * s} y2={y + 140 * s} />
@@ -86,81 +106,101 @@ const Side: React.FC<{
 						strokeLinecap="round"
 						strokeLinejoin="round"
 					/>
-					<rect x={Math.min(x - f * 66 * s, x + f * 66 * s)} y={y - 2 * s} width={132 * s} height={16 * s} rx={8 * s} fill={PAL.light} stroke={PAL.ink} strokeWidth={3} />
+					<rect x={x - 66 * s} y={y - 2 * s} width={132 * s} height={16 * s} rx={8 * s} fill={PAL.light} stroke={PAL.ink} strokeWidth={3} />
 				</g>
 			) : null}
-		<g transform={rot ? `rotate(${rot} ${x} ${y})` : undefined}>
-			{wear === 'hijab' ? (
-				<path
-					d={`M ${hx - f * r * 1.22} ${hy + r * 0.2} L ${bx + f * 4 * s} ${top + 58 * s} L ${x + f * 30 * s} ${top + 44 * s} L ${hx + f * r * 0.7} ${hy + r * 0.9} Z`}
-					fill={wc}
-				/>
-			) : null}
-			{wear === 'ghutra' ? (
-				<path
-					d={`M ${hx - f * r * 1.1} ${hy + r * 0.3} L ${bx - f * 2 * s} ${top + 70 * s} Q ${x - f * 6 * s} ${top + 40 * s} ${x + f * 18 * s} ${top + 30 * s} L ${hx + f * r * 0.62} ${hy + r * 0.9} Z`}
-					fill={wc}
-					stroke={PAL.light}
-					strokeWidth={3 * s}
-					strokeLinejoin="round"
-				/>
-			) : null}
-			<rect x={hx - 13 * s - f * 4 * s} y={hy + r - 8 * s} width={26 * s} height={top - hy - r + 14 * s} fill={PAL.skin} />
-			<path d={torso} fill={coat ? PAL.white : body} stroke={coat ? PAL.light : 'none'} strokeWidth={3 * s} />
-			{coat ? (
-				<g>
-					<path d={`M ${x + f * 8 * s} ${top} L ${fx - f * 3 * s} ${top + 30 * s} L ${fx - f * 3 * s} ${top + 92 * s} Z`} fill={body} />
-					<path d={`M ${x + f * 8 * s} ${top + 2 * s} L ${x + f * 30 * s} ${top + 104 * s} L ${x + f * 30 * s} ${y}`} stroke={PAL.light} strokeWidth={4 * s} fill="none" strokeLinecap="round" />
+			{legs && standing ? (
+				<g fill={PAL.ink}>
+					<rect x={x - f * 6 * s - 24 * s} y={y - 10 * s} width={48 * s} height={200 * s} rx={22 * s} />
+					<rect x={x + f * 14 * s - 24 * s} y={y - 10 * s} width={48 * s} height={200 * s} rx={22 * s} transform={`rotate(${-f * 6} ${x} ${y})`} />
 				</g>
 			) : null}
-			{wear === 'hijab' ? (
-				<g>
-					<circle cx={hx - f * r * 0.1} cy={hy + 2 * s} r={r * 1.28} fill={wc} />
-					<ellipse cx={hx + f * r * 0.42} cy={hy + r * 0.12} rx={r * 0.52} ry={r * 0.78} fill={PAL.skin} />
+			{upper ? (
+				<g transform={rot ? `rotate(${rot} ${x} ${y})` : undefined}>
+					{wear === 'hijab' ? (
+						<path
+							d={`M ${hx - f * r * 1.22} ${hy + r * 0.2} L ${bx + f * 4 * s} ${top + 58 * s} L ${x + f * 30 * s} ${top + 44 * s} L ${hx + f * r * 0.7} ${hy + r * 0.9} Z`}
+							fill={wc}
+						/>
+					) : null}
+					{wear === 'ghutra' ? (
+						<path
+							d={`M ${hx - f * r * 1.1} ${hy + r * 0.3} L ${bx - f * 2 * s} ${top + 70 * s} Q ${x - f * 6 * s} ${top + 40 * s} ${x + f * 18 * s} ${top + 30 * s} L ${hx + f * r * 0.62} ${hy + r * 0.9} Z`}
+							fill={wc}
+							stroke={PAL.light}
+							strokeWidth={3 * s}
+							strokeLinejoin="round"
+						/>
+					) : null}
+					<rect x={hx - 13 * s - f * 4 * s} y={hy + r - 8 * s} width={26 * s} height={top - hy - r + 14 * s} fill={PAL.skin} />
+					<path d={torso} fill={coat ? PAL.white : body} stroke={coat ? PAL.light : 'none'} strokeWidth={3 * s} />
+					{coat ? (
+						<g>
+							<path d={`M ${x + f * 8 * s} ${top} L ${fx - f * 3 * s} ${top + 30 * s} L ${fx - f * 3 * s} ${top + 92 * s} Z`} fill={body} />
+							<path
+								d={`M ${x + f * 8 * s} ${top + 2 * s} L ${x + f * 30 * s} ${top + 104 * s} L ${x + f * 30 * s} ${y}`}
+								stroke={PAL.light}
+								strokeWidth={4 * s}
+								fill="none"
+								strokeLinecap="round"
+							/>
+						</g>
+					) : null}
+					{wear === 'hijab' ? (
+						<g>
+							<circle cx={hx - f * r * 0.1} cy={hy + 2 * s} r={r * 1.28} fill={wc} />
+							<ellipse cx={hx + f * r * 0.42} cy={hy + r * 0.12} rx={r * 0.52} ry={r * 0.78} fill={PAL.skin} />
+						</g>
+					) : null}
+					{wear === 'ghutra' ? (
+						<g>
+							<path
+								d={`M ${gFx} ${gFy} A ${r * 1.1} ${r * 1.1} 0 0 ${sweep} ${gBx} ${gBy} L ${hx - f * r * 0.24} ${hy + r * 1.0} L ${hx + f * r * 0.22} ${hy + r * 0.96} L ${hx + f * r * 0.5} ${hy - r * 0.2} Z`}
+								fill={wc}
+								stroke={PAL.light}
+								strokeWidth={3 * s}
+								strokeLinejoin="round"
+							/>
+							<ellipse cx={hx + f * r * 0.62} cy={hy + r * 0.2} rx={r * 0.5} ry={r * 0.72} fill={PAL.skin} />
+							<path
+								d={`M ${hx + f * r * 0.9} ${hy - r * 0.46} Q ${hx - f * r * 0.1} ${hy - r * 0.66} ${hx - f * r * 1.08} ${hy - r * 0.3}`}
+								fill="none"
+								stroke={PAL.ink}
+								strokeWidth={6 * s}
+								strokeLinecap="round"
+							/>
+							<path
+								d={`M ${hx + f * r * 0.94} ${hy - r * 0.24} Q ${hx - f * r * 0.1} ${hy - r * 0.42} ${hx - f * r * 1.1} ${hy - r * 0.08}`}
+								fill="none"
+								stroke={PAL.ink}
+								strokeWidth={5 * s}
+								strokeLinecap="round"
+							/>
+						</g>
+					) : null}
+					{wear === 'none' ? (
+						<g>
+							<circle cx={hx} cy={hy} r={r} fill={PAL.skin} />
+							<path
+								d={`M ${hairAx} ${hairAy} A ${r * 1.04} ${r * 1.04} 0 0 ${sweep} ${hairBx} ${hairBy} L ${hx - f * r * 0.12} ${hy + r * 0.2} Q ${hx + f * r * 0.1} ${hy - r * 0.5} ${hairAx} ${hairAy} Z`}
+								fill={wearColor ?? PAL.ink}
+							/>
+						</g>
+					) : null}
+					{pts.length ? <Limb pts={pts} s={s} color={sleeve} edge={coat ? PAL.light : edgeOf(body)} /> : null}
 				</g>
 			) : null}
-			{wear === 'ghutra' ? (
-				<g>
-					<path
-						d={`M ${fpx} ${fpy} A ${r * 1.1} ${r * 1.1} 0 0 ${sweep} ${bpx} ${bpy} L ${hx - f * r * 0.2} ${hy + r * 0.95} L ${hx + f * r * 0.62} ${hy + r * 0.85} Z`}
-						fill={wc}
-						stroke={PAL.light}
-						strokeWidth={3 * s}
-						strokeLinejoin="round"
-					/>
-					<ellipse cx={hx + f * r * 0.46} cy={hy + r * 0.22} rx={r * 0.5} ry={r * 0.74} fill={PAL.skin} />
-					<path
-						d={`M ${hx + f * r * 0.9} ${hy - r * 0.46} Q ${hx - f * r * 0.1} ${hy - r * 0.66} ${hx - f * r * 1.08} ${hy - r * 0.3}`}
-						fill="none"
-						stroke={PAL.ink}
-						strokeWidth={6 * s}
-						strokeLinecap="round"
-					/>
-					<path
-						d={`M ${hx + f * r * 0.94} ${hy - r * 0.24} Q ${hx - f * r * 0.1} ${hy - r * 0.42} ${hx - f * r * 1.1} ${hy - r * 0.08}`}
-						fill="none"
-						stroke={PAL.ink}
-						strokeWidth={5 * s}
-						strokeLinecap="round"
-					/>
-				</g>
-			) : null}
-			{wear === 'none' ? (
-				<g>
-					<circle cx={hx} cy={hy} r={r} fill={PAL.skin} />
-					<path
-						d={`M ${p60x} ${p60y} A ${r * 1.04} ${r * 1.04} 0 0 ${sweep} ${p215x} ${p215y} L ${hx - f * r * 0.12} ${hy + r * 0.2} Q ${hx + f * r * 0.1} ${hy - r * 0.5} ${p60x} ${p60y} Z`}
-						fill={wearColor ?? PAL.ink}
-					/>
-				</g>
-			) : null}
-			<Limb pts={armPts[arm]} s={s} color={sleeve} edge={coat ? PAL.light : edgeOf(body)} />
-		</g>
-			{seated ? (
+			{upper && seated ? (
 				<rect x={x - f * 66 * s - 9 * s} y={y - 118 * s} width={18 * s} height={132 * s} rx={9 * s} fill={PAL.light} stroke={PAL.ink} strokeWidth={3} />
 			) : null}
 		</g>
 	);
+};
+
+/** Short hair seen from behind: covers the whole head so it never reads as a face. */
+const BackHair: React.FC<{x: number; y: number; s: number; color?: string}> = ({x, y, s, color = PAL.ink}) => {
+	const {head, r} = personAnchors(x, y, s);
+	return <circle cx={head.x} cy={head.y - r * 0.04} r={r * 1.02} fill={color} />;
 };
 
 // One-point perspective: horizontal lines that run front-to-back converge on

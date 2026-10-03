@@ -73,8 +73,8 @@ export const Scene7: React.FC = () => {
 			) : null}
 			{BOARD.map(({slot, col, row, order}) => {
 				const target = cell(col, row);
-				const arrive = prog(frame, GATHER + order * 2.5, 24, EASE.out);
-				const leave = prog(frame, LEAVE + order * 2.5, 16, EASE.in);
+				const arrive = prog(frame, GATHER + order * 2, 24, EASE.out);
+				const leave = prog(frame, LEAVE + order * 2.5, 18, EASE.inOut);
 				const from: Rect = {...target, y: target.y + (row === 0 ? -1 : 1) * 380};
 				const s = mix(1, 0.92, leave);
 				let rect = mixRect(from, target, arrive);

@@ -15,11 +15,12 @@ const SCREEN = {x: 430, y: 252, w: 540, h: 336};
 
 type Head = {x: number; y: number; s: number; wear: Wear; body: string; wearColor?: string};
 const AUDIENCE: Head[] = [
-	{x: 70, y: 1188, s: 1.32, wear: 'hijab', body: PAL.deep, wearColor: PAL.mid},
-	{x: 312, y: 1206, s: 1.2, wear: 'ghutra', body: PAL.primary},
-	{x: 566, y: 1214, s: 1.36, wear: 'none', body: PAL.mid},
-	{x: 812, y: 1196, s: 1.22, wear: 'hijab', body: PAL.primary, wearColor: PAL.light},
-	{x: 1060, y: 1200, s: 1.32, wear: 'ghutra', body: PAL.deep},
+	{x: 60, y: 1196, s: 1.2, wear: 'hijab', body: PAL.deep, wearColor: PAL.mid},
+	{x: 290, y: 1214, s: 1.12, wear: 'ghutra', body: PAL.primary},
+	{x: 530, y: 1224, s: 1.24, wear: 'hijab', body: PAL.mid, wearColor: PAL.ink},
+	{x: 770, y: 1206, s: 1.12, wear: 'hijab', body: PAL.primary, wearColor: PAL.light},
+	{x: 1010, y: 1212, s: 1.2, wear: 'ghutra', body: PAL.deep},
+	{x: 1220, y: 1200, s: 1.16, wear: 'none', body: PAL.primary},
 ];
 
 export const focus = {
@@ -33,6 +34,12 @@ export const focus = {
 	/** The seated panelist. */
 	panelist: [0.78, 0.55],
 } as const;
+
+/** Short hair seen from behind: covers the whole head so it never reads as a face. */
+const BackHair: React.FC<{x: number; y: number; s: number}> = ({x, y, s}) => {
+	const {head, r} = personAnchors(x, y, s);
+	return <circle cx={head.x} cy={head.y - r * 0.04} r={r * 1.02} fill={PAL.ink} />;
+};
 
 /** A spotlight hanging from the truss, aimed down. */
 const Lamp: React.FC<{x: number; tilt?: number}> = ({x, tilt = 0}) => (
@@ -73,6 +80,19 @@ const Conference: React.FC = () => {
 			].map(([cx, cy], i) => (
 				<circle key={i} cx={cx} cy={cy} r={16} fill={PAL.deep} stroke={PAL.primary} strokeWidth={8} />
 			))}
+
+			{/* roll-up banner: abstract event identity */}
+			<g>
+				<rect x={28} y={372} width={104} height={420} fill={PAL.white} stroke={PAL.ink} strokeWidth={4} />
+				<rect x={28} y={372} width={104} height={150} fill={PAL.primary} />
+				<rect x={28} y={372} width={104} height={150} fill={`url(#${ids.dotsWhite})`} />
+				<path d="M 44 470 C 70 470 74 420 100 420 L 116 420" stroke={PAL.white} strokeWidth={6} fill="none" strokeLinecap="round" />
+				<circle cx={100} cy={420} r={9} fill={PAL.white} />
+				<rect x={46} y={548} width={68} height={10} rx={5} fill={PAL.deep} />
+				<rect x={46} y={572} width={52} height={7} rx={3.5} fill={PAL.light} />
+				<rect x={46} y={590} width={60} height={7} rx={3.5} fill={PAL.light} />
+				<rect x={20} y={786} width={120} height={14} rx={5} fill={PAL.ink} />
+			</g>
 
 			{/* truss + spotlights */}
 			<rect x={-10} y={140} width={1220} height={20} fill={PAL.ink} />
@@ -173,11 +193,11 @@ const Conference: React.FC = () => {
 				<path d="M 150 598 L 270 598 L 252 806 L 168 806 Z" fill={PAL.white} stroke={PAL.ink} strokeWidth={4} strokeLinejoin="round" />
 				<path d="M 166 630 L 254 630 L 246 742 L 174 742 Z" fill={PAL.primary} />
 				<path d="M 166 630 L 254 630 L 246 742 L 174 742 Z" fill={`url(#${ids.dotsWhite})`} />
-				<circle cx={210} cy={672} r={16} fill={PAL.deep} stroke={PAL.white} strokeWidth={5} />
+				<path d="M 180 712 C 200 712 204 664 226 664 L 240 664" stroke={PAL.white} strokeWidth={6} fill="none" strokeLinecap="round" />
 				<path d="M 140 588 L 280 588 L 272 606 L 148 606 Z" fill={PAL.light} stroke={PAL.ink} strokeWidth={4} strokeLinejoin="round" />
 				<rect x={156} y={806} width={108} height={12} rx={4} fill={PAL.ink} />
-				<path d="M 254 590 C 262 540 252 500 276 470" stroke={PAL.ink} strokeWidth={5} fill="none" strokeLinecap="round" />
-				<rect x={268} y={452} width={16} height={26} rx={8} fill={PAL.ink} transform="rotate(30 276 465)" />
+				<path d="M 176 590 C 172 546 188 512 214 488" stroke={PAL.ink} strokeWidth={5} fill="none" strokeLinecap="round" />
+				<rect x={210} y={464} width={16} height={30} rx={8} fill={PAL.ink} transform="rotate(48 218 479)" />
 			</g>
 
 			{/* speaker: coat, ghutra, conference badge; hand on the lectern, the other toward the screen */}
@@ -207,7 +227,10 @@ const Conference: React.FC = () => {
 
 			{/* audience, seen from behind */}
 			{AUDIENCE.map((a, i) => (
-				<Person key={i} x={a.x} y={a.y} s={a.s} back body={a.body} wear={a.wear} wearColor={a.wearColor} armL="none" armR="none" />
+				<g key={i}>
+					<Person x={a.x} y={a.y} s={a.s} back body={a.body} wear={a.wear} wearColor={a.wearColor} armL="none" armR="none" />
+					{a.wear === 'none' ? <BackHair x={a.x} y={a.y} s={a.s} /> : null}
+				</g>
 			))}
 		</Frame>
 	);

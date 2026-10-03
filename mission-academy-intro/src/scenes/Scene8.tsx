@@ -1,8 +1,8 @@
 // Scene 8 (56–60s) — end card.
 // The thread beside the logo unfolds one last time — into the whole deep-blue
 // field. The mark keeps a white badge (it has no dark-ground version), the name
-// turns white, and the call to action settles beneath it. Frames 60–119 are
-// completely still.
+// turns light where the field passes behind it, and the call to action settles
+// beneath. Frames 60–119 are completely still.
 import {AbsoluteFill, interpolateColors, useCurrentFrame} from 'remotion';
 import {Ltr} from '../components/Ltr';
 import {Sfx} from '../components/Sfx';
@@ -19,12 +19,11 @@ const LIFT = -110;
 const CTA = {top: 600, size: 64, weight: WEIGHT.title};
 const WEB = {top: 708, size: 40, weight: WEIGHT.caption};
 
-const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
-
 export const Scene8: React.FC = () => {
 	const frame = useCurrentFrame();
 	const th = THREAD.width;
 	const L = lockupLayout();
+	const {width: W, height: H} = CANVAS;
 
 	// The thread widens across the frame, then thickens into the field.
 	const widen = prog(frame, 6, 18, EASE.inOut);
@@ -32,8 +31,8 @@ export const Scene8: React.FC = () => {
 	const field: Rect = {
 		x: mix(L.rule.left, 0, widen),
 		y: mix(L.rule.y - th / 2, 0, thicken),
-		w: mix(L.rule.right - L.rule.left, CANVAS.width, widen),
-		h: mix(th, CANVAS.height, thicken),
+		w: mix(L.rule.right - L.rule.left, W, widen),
+		h: mix(th, H, thicken),
 	};
 	const fieldColor = interpolateColors(thicken, [0, 0.55], [COLORS.primary, COLORS.deep]);
 
@@ -48,15 +47,21 @@ export const Scene8: React.FC = () => {
 	const badgeIn = prog(frame, 0, 14, EASE.out);
 	const badge = mixRect(mark, padded, badgeIn);
 
-	// Text turns light as the field passes behind it.
-	const nameCov = clamp01((L.rule.y - 10 - field.y) / (L.rule.y - 10 - (L.nameTop + 28)));
-	const enCov = clamp01((field.y + field.h - (L.enTop + 10)) / 44);
-	const nameColor = interpolateColors(nameCov, [0, 1], [COLORS.ink, COLORS.white]);
-	const enColor = interpolateColors(enCov, [0, 1], [COLORS.inkSoft, COLORS.light]);
-
-	// Then the lockup lifts to make room for the call to action.
-	// (Shifted left by half the badge padding so the badged lockup is centered.)
+	// Then the lockup lifts to make room for the call to action (shifted by half
+	// the badge padding so the badged lockup is centered), and the gap the
+	// thread left between the two names closes.
 	const settle = prog(frame, 22, 26, EASE.inOut);
+	const tx = mix(0, -BADGE_PAD / 2, settle);
+	const ty = mix(0, LIFT, settle);
+
+	// Two-tone wipe: light text where the field is behind it, dark elsewhere.
+	const top = field.y - ty;
+	const bottom = field.y + field.h - ty;
+	const inBand = `inset(${top}px -100px ${H - bottom}px -100px)`;
+	const outBand = `polygon(evenodd, -100px -2000px, ${W + 100}px -2000px, ${W + 100}px ${H + 2000}px, -100px ${H + 2000}px, -100px -2000px, -100px ${top}px, ${W + 100}px ${top}px, ${W + 100}px ${bottom}px, -100px ${bottom}px, -100px ${top}px)`;
+	const dark = thicken < 1;
+	const light = thicken > 0;
+	const enShift = mix(0, -14, settle);
 
 	return (
 		<AbsoluteFill>
@@ -71,7 +76,7 @@ export const Scene8: React.FC = () => {
 					background: fieldColor,
 				}}
 			/>
-			<AbsoluteFill style={{transform: `translate(${mix(0, -BADGE_PAD / 2, settle)}px, ${mix(0, LIFT, settle)}px)`}}>
+			<AbsoluteFill style={{transform: `translate(${tx}px, ${ty}px)`}}>
 				{badgeIn > 0 ? (
 					<div
 						style={{
@@ -88,7 +93,30 @@ export const Scene8: React.FC = () => {
 					/>
 				) : null}
 				<LockupMark L={L} />
-				<LockupText L={L} nameStart={-60} enStart={-60} nameColor={nameColor} enColor={enColor} />
+				{dark ? (
+					<AbsoluteFill style={{clipPath: light ? outBand : undefined}}>
+						<LockupText
+							L={L}
+							nameStart={-60}
+							enStart={-60}
+							nameColor={COLORS.ink}
+							enColor={COLORS.inkSoft}
+							enShift={enShift}
+						/>
+					</AbsoluteFill>
+				) : null}
+				{light ? (
+					<AbsoluteFill style={{clipPath: dark ? inBand : undefined}}>
+						<LockupText
+							L={L}
+							nameStart={-60}
+							enStart={-60}
+							nameColor={COLORS.white}
+							enColor={COLORS.light}
+							enShift={enShift}
+						/>
+					</AbsoluteFill>
+				) : null}
 			</AbsoluteFill>
 			<div
 				style={{
