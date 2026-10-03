@@ -14,13 +14,15 @@ const PNL = {x: 940, y: 762, s: 0.86}; // seated panelist
 const SCREEN = {x: 430, y: 252, w: 540, h: 336};
 
 type Head = {x: number; y: number; s: number; wear: Wear; body: string; wearColor?: string};
+// Head centres sit at y ≈ 900 so heads and a sliver of shoulders survive the
+// wide crop (visible y ≈ 218–982); waists are hidden behind seat backs.
 const AUDIENCE: Head[] = [
-	{x: 60, y: 1196, s: 1.2, wear: 'hijab', body: PAL.deep, wearColor: PAL.mid},
-	{x: 290, y: 1214, s: 1.12, wear: 'ghutra', body: PAL.primary},
-	{x: 530, y: 1224, s: 1.24, wear: 'hijab', body: PAL.mid, wearColor: PAL.ink},
-	{x: 770, y: 1206, s: 1.12, wear: 'hijab', body: PAL.primary, wearColor: PAL.light},
-	{x: 1010, y: 1212, s: 1.2, wear: 'ghutra', body: PAL.deep},
-	{x: 1220, y: 1200, s: 1.16, wear: 'none', body: PAL.primary},
+	{x: 60, y: 1160, s: 1.2, wear: 'hijab', body: PAL.deep, wearColor: PAL.mid},
+	{x: 292, y: 1146, s: 1.12, wear: 'ghutra', body: PAL.primary},
+	{x: 530, y: 1178, s: 1.24, wear: 'hijab', body: PAL.mid, wearColor: PAL.ink},
+	{x: 762, y: 1160, s: 1.12, wear: 'hijab', body: PAL.primary, wearColor: PAL.light},
+	{x: 1010, y: 1166, s: 1.2, wear: 'ghutra', body: PAL.deep},
+	{x: 1222, y: 1150, s: 1.16, wear: 'none', body: PAL.primary},
 ];
 
 export const focus = {
@@ -30,7 +32,7 @@ export const focus = {
 	/** The presentation screen. */
 	screen: [0.583, 0.35],
 	/** The foreground row of the audience. */
-	audience: [0.47, 0.78],
+	audience: [0.45, 0.755],
 	/** The seated panelist. */
 	panelist: [0.78, 0.55],
 } as const;
@@ -231,6 +233,10 @@ const Conference: React.FC = () => {
 					<Person x={a.x} y={a.y} s={a.s} back body={a.body} wear={a.wear} wearColor={a.wearColor} armL="none" armR="none" />
 					{a.wear === 'none' ? <BackHair x={a.x} y={a.y} s={a.s} /> : null}
 				</g>
+			))}
+			{/* theatre seat backs hide the waists (visible only in the square) */}
+			{AUDIENCE.map((a, i) => (
+				<rect key={i} x={a.x - 112} y={a.y - 50} width={224} height={140} rx={26} fill={PAL.deep} stroke={PAL.ink} strokeWidth={4} />
 			))}
 		</Frame>
 	);

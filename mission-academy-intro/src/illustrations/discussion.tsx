@@ -216,7 +216,7 @@ export const focus = {
 	/** The person currently talking (far right, gesturing) and their bubble. */
 	speaker: [0.63, 0.43],
 	/** The speech bubbles. */
-	bubbles: [0.47, 0.28],
+	bubbles: [0.48, 0.29],
 } as const;
 
 /** A sheet lying on the table: drawn flat, then squashed into the table's perspective. */
