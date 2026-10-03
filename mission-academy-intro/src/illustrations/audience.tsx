@@ -37,8 +37,8 @@ const ROWS: Row[] = [
 			{x: 50, wear: 'ghutra', body: PAL.primary},
 			{x: 200, wear: 'hijab', body: PAL.deep, wearColor: PAL.mid},
 			{x: 350, wear: 'none', body: PAL.primary},
-			{x: 500, wear: 'ghutra', body: PAL.deep},
-			{x: 650, wear: 'hijab', body: PAL.primary, wearColor: PAL.deep},
+			{x: 500, wear: 'ghutra', body: PAL.primary},
+			{x: 650, wear: 'hijab', body: PAL.deep, wearColor: PAL.ink},
 			{x: 800, wear: 'ghutra', body: PAL.deep},
 			{x: 950, wear: 'hijab', body: PAL.primary, wearColor: PAL.ink},
 			{x: 1100, wear: 'none', body: PAL.deep},
@@ -93,7 +93,7 @@ const SeatBacks: React.FC<{row: Row; spacing: number}> = ({row, spacing}) => {
 };
 
 const Audience: React.FC = () => {
-	const ids = useIds('dots', 'glow', 'screenDots');
+	const ids = useIds('dots', 'glow', 'screenDots', 'handDots');
 	const t = useAmbientFrame();
 	const wave = Math.sin(t / 22) * 1.5;
 	const pulse = 0.5 + Math.sin(t / 30) * 0.5;
@@ -106,6 +106,7 @@ const Audience: React.FC = () => {
 			<defs>
 				<Halftone id={ids.dots} color={PAL.mid} spacing={18} r={4} opacity={0.6} />
 				<Halftone id={ids.screenDots} color={PAL.light} spacing={12} r={2.4} />
+				<Halftone id={ids.handDots} color={PAL.primary} spacing={11} r={2.4} opacity={0.55} />
 				<radialGradient id={ids.glow} cx={600} cy={300} r={720} gradientUnits="userSpaceOnUse">
 					<stop offset="0" stopColor={PAL.white} />
 					<stop offset="0.38" stopColor={PAL.white} />
@@ -156,10 +157,13 @@ const Audience: React.FC = () => {
 						) : null,
 					)}
 					{ri === ASK.row ? (
+						<circle cx={HAND[0]} cy={HAND[1] - 6} r={78} fill={`url(#${ids.handDots})`} />
+					) : null}
+					{ri === ASK.row ? (
 						<g transform={`rotate(${wave} ${sh.x} ${sh.y})`}>
 							<path
 								d={`M ${sh.x} ${sh.y} L ${elbow[0]} ${elbow[1]} L ${HAND[0]} ${HAND[1]}`}
-								stroke={PAL.deep}
+								stroke={PAL.ink}
 								strokeWidth={44}
 								fill="none"
 								strokeLinecap="round"
@@ -167,7 +171,7 @@ const Audience: React.FC = () => {
 							/>
 							<path
 								d={`M ${sh.x} ${sh.y} L ${elbow[0]} ${elbow[1]} L ${HAND[0]} ${HAND[1]}`}
-								stroke={PAL.primary}
+								stroke={PAL.deep}
 								strokeWidth={36}
 								fill="none"
 								strokeLinecap="round"

@@ -251,7 +251,7 @@ const CardShape: React.FC<{c: Card; dots?: string}> = ({c, dots}) => {
 };
 
 const Workshop: React.FC = () => {
-	const ids = useIds('dots', 'dotsDeep', 'dotsWhite');
+	const ids = useIds('dots', 'dotsWhite');
 	const t = useAmbientFrame();
 	const press = Math.sin(t / 28) * 3;
 	const point = Math.sin(t / 40 + 1) * 1.2;
@@ -282,7 +282,6 @@ const Workshop: React.FC = () => {
 		<Frame bg={PAL.mist}>
 			<defs>
 				<Halftone id={ids.dots} color={PAL.light} spacing={18} r={4} />
-				<Halftone id={ids.dotsDeep} color={PAL.primary} spacing={12} r={2.4} opacity={0.5} />
 				<Halftone id={ids.dotsWhite} color={PAL.white} spacing={10} r={2} opacity={0.6} />
 			</defs>
 

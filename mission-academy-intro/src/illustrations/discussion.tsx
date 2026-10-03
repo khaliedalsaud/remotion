@@ -197,23 +197,17 @@ const Side: React.FC<{
 	);
 };
 
-/** Short hair seen from behind: covers the whole head so it never reads as a face. */
-const BackHair: React.FC<{x: number; y: number; s: number; color?: string}> = ({x, y, s, color = PAL.ink}) => {
-	const {head, r} = personAnchors(x, y, s);
-	return <circle cx={head.x} cy={head.y - r * 0.04} r={r * 1.02} fill={color} />;
-};
-
 // Table: a round top seen slightly from above.
 const T = {cx: 600, cy: 742, rx: 340, ry: 116, th: 22};
 const tableY = (x: number, side: 1 | -1) => T.cy + side * T.ry * Math.sqrt(Math.max(0, 1 - ((x - T.cx) / T.rx) ** 2));
 
 const A = {x: 466, y: 706, s: 0.92}; // far left: clinician, hijab + coat
 const B = {x: 744, y: 706, s: 0.92}; // far right: ghutra — the one talking
-const C = {x: 196, y: 806, s: 1}; // left end, in profile
+const C = {x: 214, y: 806, s: 1}; // left end, in profile
 const D = {x: 884, y: 1150, s: 1.3}; // foreground, from behind (seated, near side)
 
 const BUB_B = {x: 700, y: 262, w: 300, h: 132};
-const BUB_C = {x: 150, y: 318, w: 250, h: 108};
+const BUB_C = {x: 188, y: 318, w: 244, h: 108};
 
 export const focus = {
 	center: [0.5, 0.5],

@@ -327,7 +327,7 @@ const DESKS: [number, number][] = [
 export const focus = {
 	center: [0.5, 0.52],
 	/** The middle row of learners at their laptops. */
-	learners: [0.42, 0.56],
+	learners: [0.44, 0.58],
 	/** The presenter beside the slide at the front of the room. */
 	presenter: [0.6, 0.25],
 } as const;
