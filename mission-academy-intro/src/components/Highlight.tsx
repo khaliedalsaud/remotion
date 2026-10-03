@@ -20,7 +20,7 @@ export const Highlight: React.FC<{
 	const barStyle: React.CSSProperties =
 		variant === 'underline'
 			? {left: 0, right: 0, bottom: '0.02em', height: '0.075em', borderRadius: 999}
-			: {left: '-0.14em', right: '-0.14em', top: '0.2em', bottom: '0.06em', borderRadius: '0.06em'};
+			: {left: '-0.1em', right: '-0.1em', top: '0.2em', bottom: '0.06em', borderRadius: '0.06em'};
 	return (
 		<span style={{position: 'relative', display: 'inline-block', whiteSpace: 'nowrap'}}>
 			<span
@@ -40,7 +40,9 @@ export const Highlight: React.FC<{
 						position: 'absolute',
 						inset: 0,
 						color: COLORS.white,
-						clipPath: `inset(-0.3em -0.2em -0.4em calc(${(1 - p) * 100}% - ${p * 0.14}em))`,
+						// Only the part of the word inside the strip turns white; dots and
+						// tails that hang below it stay ink so they never vanish on paper.
+						clipPath: `inset(0.2em -0.1em 0.06em calc(${(1 - p) * 100}% - ${p * 0.1}em))`,
 					}}
 				>
 					{children}

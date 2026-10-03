@@ -35,7 +35,7 @@ const LOGO_Y = 190;
 const BARS = logoBarRects(LOGO_X, LOGO_Y, LOGO_H);
 
 const MORPH = 132;
-const EXIT = 184;
+const EXIT = 192;
 
 export const Scene2: React.FC = () => {
 	const frame = useCurrentFrame();
@@ -55,12 +55,12 @@ export const Scene2: React.FC = () => {
 	if (frame >= stepStart[2] - 18) lineLeft = lineReach[2];
 	let lineRight = STEPS[0].x + SLOT_W;
 	let lineY = LINE_Y;
-	const glide = prog(frame, EXIT, 25, EASE.inOut);
+	const glide = prog(frame, EXIT, 17, EASE.inOut);
 	lineLeft = mix(lineLeft, HANDOFF.s2s3Line.xLeft, glide);
 	lineRight = mix(lineRight, HANDOFF.s2s3Line.xRight, glide);
 	lineY = mix(lineY, HANDOFF.s2s3Line.y, glide);
 
-	const exitFade = 1 - prog(frame, EXIT, 14, EASE.in);
+	const exitFade = 1 - prog(frame, EXIT, 10, EASE.in);
 	// The words leave first so the rising thread never strikes through them.
 	const wordFade = 1 - prog(frame, EXIT - 12, 12, EASE.soft);
 	const logoIn = prog(frame, MORPH + 36, 10, EASE.soft);
@@ -79,9 +79,11 @@ export const Scene2: React.FC = () => {
 				} else {
 					const lift = prog(frame, stepStart[i] - 4, 22, EASE.inOut);
 					if (lift <= 0) return null;
-					const fromLine: Rect = {x: step.x, y: LINE_Y - th / 2, w: SLOT_W, h: th};
+					// The clipping rises from a thread segment at its own base, so it
+					// never sweeps through the word band below it.
+					const fromLine: Rect = {x: step.x, y: SLOT_Y + SLOT_H - th, w: SLOT_W, h: th};
 					rect = mixRect(fromLine, slotRect(step.x), lift);
-					reveal = prog(frame, stepStart[i] + 4, 12, EASE.out);
+					reveal = prog(frame, stepStart[i] + 1, 12, EASE.out);
 				}
 				const m = prog(frame, MORPH + i * 4, 34, EASE.inOut);
 				rect = mixRect(rect, barRect, m);

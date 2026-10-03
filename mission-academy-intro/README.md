@@ -11,7 +11,8 @@ practice and development, and ends beside the logo.
 npm install
 npm run studio      # live preview + timeline (composition: MissionAcademyIntro)
 npm run render      # → out/mission-academy-intro.mp4 (H.264, 1080p)
-npm run cover       # → out/cover.png (frame 330: the logo resolving from the three clippings)
+npm run cover       # → out/cover.png (frame 1520: the answer «من المعرفة… إلى الممارسة.» beside the opened window)
+npm run render:clean  # → out/mission-academy-intro-no-captions.mp4 (pair with voiceover/captions.srt)
 npm run captions    # → voiceover/voiceover-script.md, captions.srt, timings.json
 npm run typecheck
 ```
@@ -64,3 +65,15 @@ node scripts/fetch-fonts.mjs      # IBM Plex woff2 subsets + manifest
 python3 scripts/make-paper.py     # paper grain texture
 node scripts/synth-sfx.mjs        # procedural, license-free transition sounds
 ```
+
+## Status of assets
+
+- **Voice-over:** not recorded. The film ships with burned-in Arabic captions timed to the
+  proposed narration (`voiceover/`); the clean render pairs with `captions.srt`.
+- **Photos:** none supplied → every clipping uses an abstract editorial illustration.
+- **Logo:** only the mark (255 px JPEG) was supplied. It is used unaltered (background removed,
+  never recolored or redrawn), shown at ≤ 1.3× its native size, and on the deep-blue end card it
+  sits on a white badge because no dark-background version exists. Needed: SVG or high-res
+  mark, the official Arabic/English wordmark lockup, and a white/negative version.
+- **Website:** `new.missionacademy.sa` exactly as supplied — confirm the public domain.
+- **Music:** none (no licensed track supplied). SFX are procedurally synthesised, license-free.

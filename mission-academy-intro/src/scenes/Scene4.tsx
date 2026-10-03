@@ -34,7 +34,7 @@ const CLIP_W = 420;
 const CLIP_H = (CLIP_W * OUT.h) / OUT.w;
 const LABEL = 36;
 /** Thread below the label's top, in em (clears ي / ر descenders). */
-const UNDER = 1.45;
+const UNDER = 1.75;
 /** Labels are typeset at the close-up scale and scaled with the camera. */
 const S_REF = 1.5;
 const Y_HI = 485;
@@ -193,7 +193,13 @@ export const Scene4: React.FC = () => {
 				const unfold = prog(frame, c, 18, EASE.inOut);
 				if (lift <= 0) return null;
 				const box = clipRect(s);
-				const line: Rect = {x: s.node.x - FLAT, y: s.node.y - th / 2, w: FLAT - RING_R - 8, h: th};
+				// Clips above the path lift from just over their label, never through it.
+				const line: Rect = {
+					x: s.node.x - FLAT,
+					y: s.above ? labelTop(s) - th : s.node.y - th / 2,
+					w: FLAT - RING_R - 8,
+					h: th,
+				};
 				const edge: Rect = {...line, y: s.above ? box.y + box.h - th : box.y};
 				let rect = toScreen(mixRect(mixRect(line, edge, lift), box, unfold), cam);
 				const reveal = prog(frame, c + 3, 12, EASE.out);

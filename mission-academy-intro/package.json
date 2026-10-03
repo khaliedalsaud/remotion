@@ -6,7 +6,8 @@
   "scripts": {
     "studio": "remotion studio",
     "render": "remotion render MissionAcademyIntro out/mission-academy-intro.mp4",
-    "cover": "remotion still MissionAcademyIntro out/cover.png --frame=330",
+    "cover": "remotion still MissionAcademyIntro out/cover.png --frame=1520 --props={\"captions\":false,\"sfx\":false}",
+    "render:clean": "remotion render MissionAcademyIntro out/mission-academy-intro-no-captions.mp4 --props={\"captions\":false,\"sfx\":true}",
     "captions": "tsx scripts/export-voiceover.ts",
     "typecheck": "tsc"
   },

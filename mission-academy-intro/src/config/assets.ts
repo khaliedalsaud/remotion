@@ -56,4 +56,4 @@ export const SFX_FILES = {
 
 export type SfxName = keyof typeof SFX_FILES;
 
-export const SFX_MASTER_VOLUME = 0.55;
+export const SFX_MASTER_VOLUME = 1;

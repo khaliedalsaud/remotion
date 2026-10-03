@@ -17,10 +17,10 @@ const L1 = {size: 92, weight: WEIGHT.title, top: 196};
 const L2 = {size: 176, weight: WEIGHT.display, top: 286};
 const L3 = {size: 176, weight: WEIGHT.display, top: 506};
 /** Underline offset below a line box's top, as a fraction of font size. */
-const UNDER = 1.2;
+const UNDER = 1.3;
 const WIN = HANDOFF.s1s2Window;
 
-const EXIT_AT = 126;
+const EXIT_AT = 138;
 
 const Line: React.FC<{top: number; size: number; weight: number; children: React.ReactNode}> = ({
 	top,
@@ -63,9 +63,9 @@ export const Scene1: React.FC = () => {
 	const travelR = prog(frame, kCue + 12, 18, EASE.inOut);
 	const travelY = prog(frame, kCue + 8, 18, EASE.inOut);
 	// 3. Leaves the sentence, heads for the window position, unfolds into it.
-	const outL = prog(frame, pCue + 6, 14, EASE.inOut);
-	const outR = prog(frame, pCue + 10, 14, EASE.inOut);
-	const unfold = prog(frame, pCue + 16, 20, EASE.inOut);
+	const outL = prog(frame, pCue + 2, 14, EASE.inOut);
+	const outR = prog(frame, pCue + 6, 14, EASE.inOut);
+	const unfold = prog(frame, pCue + 10, 18, EASE.inOut);
 
 	const knowLeft = RIGHT - wKnow;
 	const pracLeft = RIGHT - wLine3;
@@ -81,8 +81,8 @@ export const Scene1: React.FC = () => {
 	const dash: Rect = {x: left, y: y - th / 2, w: Math.max(0, right - left), h: th};
 	const rect = mixRect(dash, WIN, unfold);
 
-	const reveal = prog(frame, pCue + 19, 12, EASE.out);
-	const zoom = mix(1.22, 1, prog(frame, pCue + 16, 32, EASE.out));
+	const reveal = prog(frame, pCue + 13, 12, EASE.out);
+	const zoom = mix(1.22, 1, prog(frame, pCue + 10, 32, EASE.out));
 	const practiceColor = interpolateColors(
 		prog(frame, pCue - 6, 10, EASE.out),
 		[0, 1],
@@ -104,12 +104,18 @@ export const Scene1: React.FC = () => {
 					zoom={{scale: zoom, x: 0.55, y: 0.45}}
 				/>
 			) : null}
-			<AbsoluteFill style={{transform: `scale(${drift})`, transformOrigin: `${RIGHT}px 50%`}}>
+			<AbsoluteFill
+				style={{
+					transform: `scale(${drift})`,
+					transformOrigin: `${RIGHT}px 50%`,
+					opacity: 1 - prog(frame, EXIT_AT, 10, EASE.in),
+				}}
+			>
 				<Line {...L1}>
-					<Words text={T.line1} start={0} stagger={5} duration={20} exitAt={EXIT_AT} exitDuration={12} />
+					<Words text={T.line1} start={0} stagger={5} duration={20} />
 				</Line>
 				<Line {...L2}>
-					<Words text={T.knowledge} start={8} duration={22} exitAt={EXIT_AT} exitDuration={12} />
+					<Words text={T.knowledge} start={8} duration={22} />
 				</Line>
 				<Line {...L3}>
 					<Words
@@ -117,16 +123,14 @@ export const Scene1: React.FC = () => {
 						start={18}
 						stagger={6}
 						duration={22}
-						exitAt={EXIT_AT}
-						exitDuration={12}
 						renderWord={(w) => (w === T.practice ? <span style={{color: practiceColor}}>{w}</span> : w)}
 					/>
 				</Line>
 			</AbsoluteFill>
 			<Sfx at={kCue - 16} name="tick" volume={0.5} />
 			<Sfx at={kCue + 6} name="swipe" volume={0.45} />
-			<Sfx at={pCue + 6} name="swipe" volume={0.4} />
-			<Sfx at={pCue + 18} name="paper" volume={0.6} />
+			<Sfx at={pCue + 2} name="swipe" volume={0.4} />
+			<Sfx at={pCue + 12} name="paper" volume={0.6} />
 		</AbsoluteFill>
 	);
 };

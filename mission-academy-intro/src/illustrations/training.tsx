@@ -50,6 +50,9 @@ const Training: React.FC = () => {
 			<Doc x={690} y={888} w={130} h={56} rotate={3} lines={2} heading={false} />
 			<Person x={300} y={1120} s={1.45} back body={PAL.primary} wear="ghutra" armL="none" armR="none" />
 			<Person x={1010} y={1130} s={1.45} back body={PAL.deep} wear="hijab" wearColor={PAL.mid} armL="none" armR="none" />
+			{/* the foreground trainees continue off the bottom edge in any crop */}
+			<rect x={300 - 113} y={1110} width={226} height={100} fill={PAL.primary} />
+			<rect x={1010 - 113} y={1120} width={226} height={90} fill={PAL.deep} />
 		</Frame>
 	);
 };

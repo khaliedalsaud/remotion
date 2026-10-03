@@ -26,7 +26,7 @@ const cell = (col: number, row: 0 | 1): Rect => ({
 	h: ROW_H,
 });
 
-// `order`: arrival / withdrawal order, right → left, alternating rows.
+// `order`: arrival order, right → left, alternating rows.
 const BOARD: Array<{slot: Slot; col: number; row: 0 | 1; order: number}> = [
 	{slot: 'practitioner', col: 0, row: 0, order: 0},
 	{slot: 'interaction', col: 0, row: 1, order: 1},
@@ -38,15 +38,14 @@ const BOARD: Array<{slot: Slot; col: number; row: 0 | 1; order: number}> = [
 ];
 const HOME = cell(3, 0);
 
-const GATHER = 12;
-const LEAVE = 58;
+const GATHER = 8;
+const LEAVE = 66;
 /** While the board is up the name sits in its middle band; it then settles under the mark. */
 const BOARD_NAME_TOP = 432;
 
 export const Scene7: React.FC = () => {
 	const frame = useCurrentFrame();
 	const nCue = cue('s7', 'name');
-	const pCue = cue('s7', 'practice');
 	const th = THREAD.width;
 	const L = lockupLayout();
 	const P = taglineSpans().practice;
@@ -60,12 +59,13 @@ export const Scene7: React.FC = () => {
 	const home = mixRect(mixRect(OPEN_RECT, HOME, shrink), line, fold);
 
 	// …which drops level with the name, then slides under it to rest by the mark.
-	const dropY = prog(frame, pCue - 28, 12, EASE.inOut);
-	const lead = prog(frame, pCue - 18, 18, EASE.inOut);
-	const tail = prog(frame, pCue - 14, 18, EASE.inOut);
+	const dropY = prog(frame, LEAVE + 28, 10, EASE.inOut);
+	const lead = prog(frame, LEAVE + 32, 18, EASE.inOut);
+	const tail = prog(frame, LEAVE + 36, 18, EASE.inOut);
 	const travelling = fold >= 1;
 
-	const settle = prog(frame, LEAVE + 2, 30, EASE.inOut);
+	// The name only moves once the bottom row has cleared the area it moves through.
+	const settle = prog(frame, LEAVE + 26, 26, EASE.inOut);
 	const nameDy = mix(BOARD_NAME_TOP - L.nameTop, 0, settle);
 
 	// Scene 6's thread retracts into the window's edge as the tagline leaves.
@@ -80,10 +80,18 @@ export const Scene7: React.FC = () => {
 			{BOARD.map(({slot, col, row, order}) => {
 				const target = cell(col, row);
 				const arrive = prog(frame, GATHER + order * 2, 24, EASE.out);
-				const leave = prog(frame, LEAVE + order * 2.5, 18, EASE.inOut);
-				const from: Rect = {...target, y: target.y + (row === 0 ? -1 : 1) * 380};
+				// Top row leaves first (upward) so the mark can grow; the bottom row
+				// slides out sideways, never through the caption band.
+				const leaveAt = row === 0 ? LEAVE + col * 2.5 : LEAVE + 8 + col * 2.5;
+				const leave = prog(frame, leaveAt, 18, EASE.inOut);
+				const from: Rect =
+					row === 0 ? {...target, y: target.y - 380} : {...target, x: target.x + 320};
 				const s = mix(1, 0.92, leave);
 				let rect = mixRect(from, target, arrive);
+				rect =
+					row === 0
+						? {...rect, y: rect.y - 120 * leave}
+						: {...rect, x: rect.x - 160 * leave};
 				rect = {
 					x: rect.x + (rect.w * (1 - s)) / 2,
 					y: rect.y + (rect.h * (1 - s)) / 2,
@@ -119,7 +127,7 @@ export const Scene7: React.FC = () => {
 					y={mix(line.y + th / 2, L.rule.y, dropY)}
 				/>
 			)}
-			<LockupMark L={L} reveal={prog(frame, LEAVE + 8, 26, EASE.inOut)} />
+			<LockupMark L={L} reveal={prog(frame, LEAVE + 18, 24, EASE.inOut)} />
 			<LockupText
 				L={L}
 				nameStart={nCue - 4}
@@ -133,11 +141,11 @@ export const Scene7: React.FC = () => {
 			<Sfx at={6} name="whoosh" volume={0.45} />
 			<Sfx at={GATHER + 4} name="paper" volume={0.4} />
 			<Sfx at={nCue - 4} name="tick" volume={0.35} />
-			<Sfx at={LEAVE + 8} name="swell" volume={0.5} />
+			<Sfx at={LEAVE + 18} name="swell" volume={0.5} />
 			<Sfx at={LEAVE} name="swipe" volume={0.3} />
 			<Sfx at={LEAVE + 12} name="paper" volume={0.45} />
-			<Sfx at={pCue - 18} name="swipe" volume={0.4} />
-			<Sfx at={pCue} name="tick" volume={0.45} />
+			<Sfx at={LEAVE + 32} name="swipe" volume={0.4} />
+			<Sfx at={LEAVE + 50} name="tick" volume={0.45} />
 		</AbsoluteFill>
 	);
 };

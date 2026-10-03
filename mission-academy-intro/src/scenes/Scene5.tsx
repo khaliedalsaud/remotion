@@ -98,8 +98,8 @@ const CAM_NET: Point = {
 const S_END = 0.5;
 const PULL = 146;
 const PULL_END = 196;
-const GATHER = 222;
-const END = 266;
+const GATHER = 236;
+const END = 268;
 const CAM: CamKey[] = [
 	{f: 0, x: CANVAS.cx, y: CANVAS.cy, s: 1},
 	{f: PULL, x: CANVAS.cx, y: CANVAS.cy, s: 1},
@@ -260,10 +260,10 @@ const CROSS: Array<[number, number]> = (() => {
 // ---- Gathering ----
 const DEPTH_STEP = MAX_DEPTH > 1 ? 14 / (MAX_DEPTH - 1) : 0;
 const collapseAt = (depth: number) => GATHER - 4 + (MAX_DEPTH - depth) * DEPTH_STEP;
-const COLLAPSE_DUR = 12;
-const SAT_MORPH = 240;
-const SAT_RETRACT = 248;
-const HUB_MORPH = 244;
+const COLLAPSE_DUR = 10;
+const SAT_MORPH = 248;
+const SAT_RETRACT = 254;
+const HUB_MORPH = 250;
 
 /** 0→1 as v goes a→b (for sub-ranges of a 0–1 progress). */
 const span = (v: number, a: number, b: number, easing: (t: number) => number = (t) => t) =>
@@ -315,7 +315,7 @@ export const Scene5: React.FC = () => {
 	const sats = SATS.map((s, i) => {
 		const under = s.hidden / SAT_LEN[i];
 		const out = prog(frame, s.draw, DRAW_DUR, EASE.inOut);
-		const back = prog(frame, SAT_RETRACT + i * 2, 14, EASE.inOut);
+		const back = prog(frame, SAT_RETRACT + i * 2, 10, EASE.inOut);
 		const to = frame < SAT_RETRACT ? (out > 0 ? mix(under, 1, out) : 0) : 1 - back;
 		const liftAt = s.draw + LIFT_AFTER;
 		const lift = prog(frame, liftAt, 22, EASE.inOut);
@@ -348,7 +348,7 @@ export const Scene5: React.FC = () => {
 
 	const calloutOut = 1 - prog(frame, PULL - 4, 14, EASE.in);
 	const hl = prog(frame, cExchange - 2, 18, EASE.out);
-	const titleExit = 206;
+	const titleExit = 222;
 	const titleOut = prog(frame, titleExit, 12, EASE.in);
 
 	const confPt = (key: string) => ws(clipPoint('conference', key, confWorld, 8, zoom));
@@ -356,8 +356,12 @@ export const Scene5: React.FC = () => {
 	const audience = confPt('audience');
 	const audienceRight = audience.x > HC.x + 10;
 
+	// Nothing in this scene belongs in the caption band: fade anything that
+	// strays there during the pull-back.
+	const bandMask = `linear-gradient(to bottom, black ${SAFE.bottom - 10}px, transparent ${SAFE.bottom + 30}px)`;
+
 	return (
-		<AbsoluteFill>
+		<AbsoluteFill style={{maskImage: bandMask, WebkitMaskImage: bandMask}}>
 			{/* Network links (screen px, ink-thin). */}
 			<svg width={CANVAS.width} height={CANVAS.height} style={{position: 'absolute', left: 0, top: 0}}>
 				{CROSS.map(([a, b]) => {

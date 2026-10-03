@@ -78,11 +78,11 @@ const APPLY: Sat = {
 	slot: 'apply',
 	note: T.notes.apply,
 	at: 258,
-	rect: {x: 280, y: 612, w: 368, h: 248},
+	rect: {x: 312, y: 612, w: 368, h: 248},
 	tilt: 1.2,
 	fromY: 700,
 	y: 736,
-	label: {x: 306, y: 668},
+	label: {x: 296, y: 668},
 };
 const SATS = [KNOW, SKILL, APPLY];
 
@@ -128,8 +128,8 @@ const detailOf = (s: Sat): {zoom: Point; world: Point} => {
 // Timeline (local frames).
 const DROP = 34;
 const UNFOLD = 52;
-const ZOOM = 310;
-const OUT = 328;
+const ZOOM = 300;
+const OUT = 340;
 const LAST = 359;
 
 /** The final node: where the thread leaves the skill clipping, to its left. */
@@ -141,7 +141,7 @@ const CAM: CamKey[] = [
 	{f: 0, x: CANVAS.cx, y: CANVAS.cy, s: 1},
 	// A gentle drift that keeps the title's right edge on SAFE.right.
 	{f: ZOOM, x: 980, y: 548, s: (SAFE.right - CANVAS.cx) / (SAFE.right - 980)},
-	{f: OUT - 2, x: SKILL_DETAIL.x, y: SKILL_DETAIL.y, s: 2},
+	{f: 330, x: SKILL_DETAIL.x, y: SKILL_DETAIL.y, s: 1.8},
 	{f: LAST, x: NODE.x, y: NODE.y, s: END_SCALE},
 ];
 
@@ -178,10 +178,10 @@ export const Scene3: React.FC = () => {
 		mix(1, 1.2, prog(frame, cue('s3', 'practitioners') - 16, 50, EASE.inOut));
 
 	// Exit: the skill clipping folds back into the thread, which runs on to the node.
-	const fade = 1 - prog(frame, OUT + 2, 16, EASE.inOut);
-	const fold = prog(frame, OUT, 16, EASE.inOut);
-	const reach = prog(frame, OUT + 4, 18, EASE.inOut);
-	const pop = prog(frame, OUT + 18, 10, EASE.out);
+	const fade = 1 - prog(frame, OUT + 2, 12, EASE.inOut);
+	const fold = prog(frame, OUT, 14, EASE.inOut);
+	const reach = prog(frame, OUT + 2, 14, EASE.inOut);
+	const pop = prog(frame, OUT + 12, 7, EASE.out);
 
 	// Skill branch, drawn in SCREEN space so the end state is exact.
 	const skillDraw = prog(frame, SKILL.at - 46, 18, EASE.inOut);
@@ -242,7 +242,7 @@ export const Scene3: React.FC = () => {
 					const d = detailOf(s);
 					const isSkill = s === SKILL;
 					const back = isSkill ? fold : 0;
-					const content = Math.min(reveal, isSkill ? 1 - prog(frame, OUT + 6, 8, EASE.soft) : 1);
+					const content = Math.min(reveal, isSkill ? 1 - prog(frame, OUT + 4, 8, EASE.soft) : 1);
 					const look = isSkill ? prog(frame, ZOOM + 4, OUT - ZOOM + 6, EASE.inOut) : 0;
 					const rect = mixRect(mixRect(dashOf(s), s.rect, lift), dashOf(s), back);
 					return (
@@ -257,7 +257,7 @@ export const Scene3: React.FC = () => {
 							fill={COLORS.primary}
 							contentOpacity={content}
 							zoom={{scale: mix(1.14, 1, prog(frame, s.at - 22, 40, EASE.out)) * mix(1, 1.3, look), x: d.zoom.x, y: d.zoom.y}}
-							opacity={isSkill ? 1 - prog(frame, OUT + 16, 4, EASE.soft) : fade}
+							opacity={isSkill ? 1 - prog(frame, OUT + 12, 4, EASE.soft) : fade}
 						/>
 					);
 				})}
@@ -328,7 +328,7 @@ export const Scene3: React.FC = () => {
 			))}
 			<Sfx at={ZOOM} name="whoosh" volume={0.4} />
 			<Sfx at={OUT + 2} name="swipe" volume={0.35} />
-			<Sfx at={OUT + 18} name="pop" volume={0.5} />
+			<Sfx at={OUT + 12} name="pop" volume={0.5} />
 		</AbsoluteFill>
 	);
 };

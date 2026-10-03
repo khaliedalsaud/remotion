@@ -12,7 +12,7 @@ const T = TEXT.s6;
 const SIZE = 152;
 const WEIGHT_TAG = WEIGHT.display;
 /** Underline offset below a line box's top, as a fraction of font size (as Scene 1). */
-const UNDER = 1.2;
+const UNDER = 1.3;
 const LINE_H = 1.25;
 
 export const TAG = {
