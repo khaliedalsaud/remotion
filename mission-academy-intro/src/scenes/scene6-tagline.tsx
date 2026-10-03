@@ -63,11 +63,12 @@ const Line: React.FC<{top: number; children: React.ReactNode}> = ({top, children
 export const Tagline: React.FC<{
 	start: number;
 	exitAt?: number;
+	exitDuration?: number;
 	practiceColor: string;
-}> = ({start, exitAt, practiceColor}) => (
+}> = ({start, exitAt, exitDuration = 12, practiceColor}) => (
 	<>
 		<Line top={TAG.topA}>
-			<Words text={`${T.from} ${T.knowledge}`} start={start} stagger={6} duration={22} exitAt={exitAt} exitDuration={12} />
+			<Words text={`${T.from} ${T.knowledge}`} start={start} stagger={6} duration={22} exitAt={exitAt} exitDuration={exitDuration} />
 		</Line>
 		<Line top={TAG.topB}>
 			<Words
@@ -76,7 +77,7 @@ export const Tagline: React.FC<{
 				stagger={6}
 				duration={22}
 				exitAt={exitAt}
-				exitDuration={12}
+				exitDuration={exitDuration}
 				renderWord={(w) => (w === T.practice ? <span style={{color: practiceColor}}>{w}</span> : w)}
 			/>
 		</Line>

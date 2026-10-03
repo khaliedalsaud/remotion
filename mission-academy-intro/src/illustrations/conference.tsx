@@ -158,7 +158,7 @@ const Conference: React.FC = () => {
 				<Person x={PNL.x} y={PNL.y} s={PNL.s} body={PAL.mid} wear="hijab" wearColor={PAL.ink} armL="rest" armR="rest" />
 				<rect x={PNL.x - 128} y={PNL.y - 74} width={46} height={110} rx={18} fill={PAL.pale} stroke={PAL.ink} strokeWidth={4} />
 				<rect x={PNL.x + 82} y={PNL.y - 74} width={46} height={110} rx={18} fill={PAL.pale} stroke={PAL.ink} strokeWidth={4} />
-				<rect x={pnl.x - 22} y={PNL.y - 58} width={44} height={30} rx={4} fill={PAL.white} stroke={PAL.ink} strokeWidth={3} transform={`rotate(-8 ${pnl.x} ${PNL.y - 44})`} />
+				<rect x={PNL.x - 22} y={PNL.y - 58} width={44} height={30} rx={4} fill={PAL.white} stroke={PAL.ink} strokeWidth={3} transform={`rotate(-8 ${PNL.x} ${PNL.y - 44})`} />
 			</g>
 			<g>
 				<line x1={770} y1={740} x2={770} y2={840} stroke={PAL.ink} strokeWidth={8} />
